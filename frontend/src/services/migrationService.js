@@ -1,23 +1,149 @@
 import Papa from 'papaparse';
-import { loadDb, makeId, saveDb } from './dbService';
 
-const STATUS_ALIASES = {
-  applied: 'Applied',
-  shortlisted: 'Shortlisted',
-  shortlisting: 'Shortlisted',
-  interview: 'Interview',
-  selected: 'Selected',
-  hired: 'Selected',
-  rejected: 'Rejected',
-  notselected: 'Rejected',
+const FIELD_ALIASES = {
+  name: ['name', 'studentname', 'student', 'candidate'],
+  email: ['email', 'mail', 'studentemail'],
+  cgpa: ['cgpa', 'gpa', 'grade', 'score'],
+  branch: ['branch', 'department', 'stream'],
+  company: ['company', 'companyname', 'organization', 'employer'],
+  status: ['status', 'result', 'outcome', 'stage'],
 };
 
 function normalizeText(value) {
-  return String(value || '').trim();
+  return String(value ?? '').trim();
 }
 
 function normalizeKey(value) {
   return normalizeText(value).toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function toNumber(value) {
+  const numeric = Number(String(value ?? '').replace(/,/g, '.'));
+  return Number.isFinite(numeric) ? Number(numeric.toFixed(2)) : 0;
+}
+
+function normalizeStatus(value) {
+  const key = normalizeKey(value);
+  if (key.includes('select') || key.includes('place') || key.includes('offer') || key.includes('hire')) {
+    return 'Selected';
+  }
+  if (key.includes('interview') || key.includes('shortlist')) {
+    return 'Interview';
+  }
+  return 'Applied';
+}
+
+function isEmptyRow(row) {
+  return !Object.values(row || {}).some((value) => normalizeText(value));
+}
+
+function pickField(row, canonicalKey) {
+  const aliases = FIELD_ALIASES[canonicalKey] || [canonicalKey];
+  const keys = Object.keys(row || {});
+
+  for (const key of keys) {
+    const normalized = normalizeKey(key);
+    if (!aliases.some((alias) => normalized === alias || normalized.includes(alias))) continue;
+
+    const value = normalizeText(row[key]);
+    if (value) return value;
+  }
+
+  return '';
+}
+
+function canonicalizeStudent(row, index) {
+  if (isEmptyRow(row)) return null;
+
+  const name = pickField(row, 'name');
+  const email = pickField(row, 'email');
+  const cgpa = toNumber(pickField(row, 'cgpa'));
+  const branch = pickField(row, 'branch') || 'Unknown';
+  const company = pickField(row, 'company') || 'Unassigned';
+  const status = normalizeStatus(pickField(row, 'status'));
+
+  if (!name && !email && !branch && !company && !status && !cgpa) {
+    return null;
+  }
+
+  const fallbackName = name || `Student ${index + 1}`;
+  const normalizedEmail = email || `${normalizeText(fallbackName).toLowerCase().replace(/\s+/g, '.')}@local.demo`;
+
+  return {
+    name: normalizeText(fallbackName),
+    email: normalizeText(normalizedEmail).toLowerCase(),
+    cgpa,
+    branch: normalizeText(branch) || 'Unknown',
+    company: normalizeText(company) || 'Unassigned',
+    status,
+  };
+}
+
+function dedupeStudents(students) {
+  const map = new Map();
+
+  (students || []).forEach((student) => {
+    const key = normalizeKey(student.email || student.name);
+    if (!key) return;
+
+    const existing = map.get(key);
+    if (!existing) {
+      map.set(key, student);
+      return;
+    }
+
+    if (existing.status !== 'Selected' && student.status === 'Selected') {
+      map.set(key, student);
+    }
+  });
+
+  return Array.from(map.values());
+}
+
+function hasUsefulHeader(fields = []) {
+  const normalized = (fields || []).map((field) => normalizeKey(field));
+  const aliases = Object.values(FIELD_ALIASES).flat();
+  return normalized.some((header) => aliases.some((alias) => header === alias || header.includes(alias)));
+}
+
+function cleanStudentRows(rows) {
+  const cleaned = (rows || [])
+    .map((row, index) => canonicalizeStudent(row, index))
+    .filter(Boolean);
+
+  return dedupeStudents(cleaned);
+}
+
+function parseGvizPayload(text) {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start < 0 || end <= start) {
+    throw new Error('Invalid Google Sheets response format.');
+  }
+
+  try {
+    return JSON.parse(text.slice(start, end + 1));
+  } catch {
+    throw new Error('Failed to parse Google Sheets JSON payload.');
+  }
+}
+
+function gvizTableToRows(table) {
+  const cols = (table?.cols || []).map((col, index) => normalizeText(col?.label || col?.id || `column_${index + 1}`));
+  const rows = table?.rows || [];
+
+  return rows.map((row) => {
+    const cells = row?.c || [];
+    const mapped = {};
+
+    cols.forEach((col, index) => {
+      const cell = cells[index];
+      const value = cell?.f ?? cell?.v ?? '';
+      mapped[col] = value;
+    });
+
+    return mapped;
+  });
 }
 
 function extractSheetMeta(url) {
@@ -27,265 +153,117 @@ function extractSheetMeta(url) {
 
   return {
     spreadsheetId: idMatch ? idMatch[1] : null,
-    gid: gidMatch ? gidMatch[1] : '0',
+    gid: gidMatch ? gidMatch[1] : null,
   };
 }
 
-function parseCsvText(csvText) {
-  const parsed = Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true,
-  });
+export function parseCsvContent(file) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: 'greedy',
+      transformHeader: (header) => normalizeKey(header),
+      complete: (result) => {
+        if (result.errors?.length) {
+          reject(new Error(result.errors[0]?.message || 'Invalid CSV format.'));
+          return;
+        }
 
-  if (parsed.errors?.length) {
-    const message = parsed.errors[0]?.message || 'Unable to parse CSV from sheet link.';
-    throw new Error(message);
-  }
+        const fields = (result.meta?.fields || []).map((field) => normalizeText(field));
+        if (!hasUsefulHeader(fields)) {
+          reject(
+            new Error(
+              'CSV headers are invalid. Expected columns like name, email, cgpa, branch, company, status.',
+            ),
+          );
+          return;
+        }
 
-  return parsed.data || [];
-}
+        const students = cleanStudentRows(result.data || []);
+        const rawRows = (result.data || []).length;
+        if (!students.length) {
+          reject(new Error('CSV has no valid student rows after cleaning.'));
+          return;
+        }
 
-function getCellByAliases(row, aliases, fallback = '') {
-  const keys = Object.keys(row || {});
-
-  for (const key of keys) {
-    const normalized = normalizeKey(key);
-    const matched = aliases.some((alias) => normalized.includes(alias));
-    if (!matched) continue;
-
-    const value = normalizeText(row[key]);
-    if (value) return value;
-  }
-
-  return fallback;
-}
-
-function normalizeStatus(rawStatus) {
-  const normalized = normalizeKey(rawStatus);
-  return STATUS_ALIASES[normalized] || 'Applied';
-}
-
-function inferNameFromRow(row) {
-  const values = Object.values(row || {}).map((value) => normalizeText(value));
-  return values.find((value) => /^[a-zA-Z][a-zA-Z\s.'-]{2,}$/.test(value)) || '';
-}
-
-function inferCompanyFromRow(row) {
-  const values = Object.values(row || {}).map((value) => normalizeText(value));
-  return values.find((value) => /^[a-zA-Z][a-zA-Z0-9\s.&'-]{2,}$/.test(value)) || '';
-}
-
-export function parseCsvContent(file, onComplete) {
-  Papa.parse(file, {
-    header: true,
-    skipEmptyLines: true,
-    complete: ({ data }) => onComplete(data || []),
+        resolve({
+          sourceName: file?.name || 'CSV Upload',
+          rawRows,
+          cleanedRows: students.length,
+          students,
+        });
+      },
+      error: (error) => {
+        reject(new Error(error?.message || 'Unable to parse CSV file.'));
+      },
+    });
   });
 }
 
 export async function importRowsFromGoogleSheetUrl(url) {
   const { spreadsheetId, gid } = extractSheetMeta(url);
   if (!spreadsheetId) {
-    throw new Error('Invalid Google Sheets URL. Please paste a valid sheet link.');
+    throw new Error('Invalid Google Sheets URL. Please provide a valid public link.');
   }
 
-  const csvEndpoints = [
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`,
-    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
-  ];
-
-  let lastError = null;
-  for (const endpoint of csvEndpoints) {
-    try {
-      const response = await fetch(endpoint);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const text = await response.text();
-      const rows = parseCsvText(text);
-      if (!rows.length) {
-        throw new Error('No rows found in this sheet tab.');
-      }
-
-      return {
-        sourceName: `Google Sheet (${spreadsheetId.slice(0, 6)}...)`,
-        rows,
-      };
-    } catch (error) {
-      lastError = error;
-    }
+  const endpoint = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json${gid ? `&gid=${gid}` : ''}`;
+  const response = await fetch(endpoint);
+  if (!response.ok) {
+    throw new Error(`Unable to fetch sheet data (HTTP ${response.status}).`);
   }
 
-  throw new Error(
-    `Unable to read sheet data. Make sure sheet is public (anyone with link can view). ${lastError?.message || ''}`,
-  );
-}
+  const text = await response.text();
+  const payload = parseGvizPayload(text);
+  if (payload?.status && String(payload.status).toLowerCase() !== 'ok') {
+    const message = payload?.errors?.[0]?.detailed_message || payload?.errors?.[0]?.message;
+    throw new Error(message || 'Google Sheets returned an error. Ensure the sheet is public.');
+  }
 
-export function normalizeMigrationRows(rows) {
-  const errors = [];
-  const studentMap = new Map();
-  const companyMap = new Map();
-  const applications = [];
+  const rawRows = gvizTableToRows(payload.table);
+  const students = cleanStudentRows(rawRows);
 
-  rows.forEach((row, index) => {
-    const name =
-      getCellByAliases(row, ['studentname', 'name', 'candidate', 'student']) || inferNameFromRow(row);
-    const email = getCellByAliases(row, ['email', 'mail']);
-    const companyName =
-      getCellByAliases(row, ['companyname', 'company', 'employer', 'organization']) || inferCompanyFromRow(row);
-
-    const role = getCellByAliases(row, ['role', 'jobrole', 'position', 'profile'], 'General Role');
-    const status = normalizeStatus(getCellByAliases(row, ['status', 'stage', 'result'], 'Applied'));
-    const cgpa = Number(getCellByAliases(row, ['cgpa', 'gpa', 'grade', 'score'], 0));
-    const packageValue = Number(getCellByAliases(row, ['package', 'ctc', 'salary', 'stipend'], 0));
-    const eligibility = Number(getCellByAliases(row, ['eligibility', 'mincgpa', 'cgpaeligibility'], 0));
-    const branch = getCellByAliases(row, ['branch', 'department', 'stream'], 'Unknown');
-    const deadline = getCellByAliases(row, ['deadline', 'lastdate', 'date', 'applyby'], '');
-
-    let student = null;
-    if (name || email) {
-      const studentEmail = email || `${normalizeText(name).toLowerCase().replace(/\s+/g, '.')}@college.edu`;
-      const studentKey = normalizeKey(studentEmail || name);
-
-      if (!studentMap.has(studentKey)) {
-        studentMap.set(studentKey, {
-          id: makeId('stu'),
-          name: normalizeText(name) || 'Unknown Student',
-          email: studentEmail,
-          cgpa: Number.isFinite(cgpa) ? cgpa : 0,
-          branch,
-        });
-      }
-      student = studentMap.get(studentKey);
-    }
-
-    let company = null;
-    if (companyName) {
-      const companyKey = `${normalizeKey(companyName)}::${normalizeKey(role)}`;
-      if (!companyMap.has(companyKey)) {
-        companyMap.set(companyKey, {
-          id: makeId('cmp'),
-          name: companyName,
-          role,
-          package: Number.isFinite(packageValue) ? packageValue : 0,
-          eligibility: Number.isFinite(eligibility) ? eligibility : 0,
-          deadline,
-          branch: branch || 'All',
-        });
-      }
-      company = companyMap.get(companyKey);
-    }
-
-    if (student && company) {
-      applications.push({
-        id: makeId('app'),
-        studentId: student.id,
-        companyId: company.id,
-        status,
-        createdAt: new Date().toISOString(),
-      });
-    }
-
-    if (!student && !company) {
-      errors.push(`Row ${index + 1}: could not detect student or company fields.`);
-    }
-  });
-
-  const students = Array.from(studentMap.values());
-  const companies = Array.from(companyMap.values());
-
-  if (!students.length && !companies.length) {
-    errors.push('No valid student or company records found. Check column names and sheet structure.');
+  if (!students.length) {
+    throw new Error('Sheet has no valid student rows after cleaning.');
   }
 
   return {
+    sourceName: `Google Sheet (${spreadsheetId.slice(0, 6)}...)`,
+    rawRows: rawRows.length,
+    cleanedRows: students.length,
     students,
-    companies,
-    applications,
-    errors,
   };
-}
-
-export function importMigrationData({ students, companies, applications }) {
-  const db = loadDb();
-
-  const dedupedStudents = [];
-  const seenStudentEmails = new Set();
-  (students || []).forEach((student) => {
-    const key = normalizeText(student.email).toLowerCase();
-    if (!key || seenStudentEmails.has(key)) return;
-    seenStudentEmails.add(key);
-    dedupedStudents.push(student);
-  });
-
-  const dedupedCompanies = [];
-  const seenCompanies = new Set();
-  (companies || []).forEach((company) => {
-    const key = `${normalizeText(company.name).toLowerCase()}::${normalizeText(company.role).toLowerCase()}`;
-    if (!key || seenCompanies.has(key)) return;
-    seenCompanies.add(key);
-    dedupedCompanies.push(company);
-  });
-
-  const effectiveStudents = dedupedStudents.length ? dedupedStudents : db.students;
-  const effectiveCompanies = dedupedCompanies.length ? dedupedCompanies : db.companies;
-
-  const studentIds = new Set(effectiveStudents.map((student) => student.id));
-  const companyIds = new Set(effectiveCompanies.map((company) => company.id));
-
-  const dedupedApplications = [];
-  const seenApplications = new Set();
-  (applications || []).forEach((application) => {
-    if (!studentIds.has(application.studentId) || !companyIds.has(application.companyId)) return;
-    const key = `${application.studentId}::${application.companyId}`;
-    if (seenApplications.has(key)) return;
-    seenApplications.add(key);
-    dedupedApplications.push(application);
-  });
-
-  const nextApplications = dedupedApplications.length
-    ? dedupedApplications
-    : dedupedStudents.length || dedupedCompanies.length
-      ? []
-      : db.applications;
-
-  const nextState = {
-    ...db,
-    students: effectiveStudents,
-    companies: effectiveCompanies,
-    applications: nextApplications,
-  };
-
-  return saveDb(nextState);
 }
 
 export function mockGoogleSheetData(url) {
-  const sourceName = url.includes('docs.google.com') ? 'Google Sheet' : 'Shared Link';
+  const sourceName = normalizeText(url).includes('docs.google.com') ? 'Google Sheet' : 'Mock Sheet';
   return {
     sourceName,
-    rows: [
+    rawRows: 3,
+    cleanedRows: 3,
+    students: [
       {
         name: 'Neha Khanna',
         email: 'neha@college.edu',
         cgpa: 8.5,
         branch: 'IT',
         company: 'NovaSys',
-        role: 'Data Analyst',
-        package: 7.5,
-        eligibility: 7,
-        deadline: '2026-04-25',
+        status: 'Selected',
       },
       {
         name: 'Rahul Verma',
         email: 'rahul@college.edu',
-        cgpa: 9,
+        cgpa: 6.9,
         branch: 'CSE',
         company: 'PixelCraft',
-        role: 'Frontend Engineer',
-        package: 9,
-        eligibility: 7.5,
-        deadline: '2026-04-24',
+        status: 'Interview',
+      },
+      {
+        name: 'Aman Soni',
+        email: 'aman@college.edu',
+        cgpa: 6.4,
+        branch: 'ECE',
+        company: 'Unassigned',
+        status: 'Applied',
       },
     ],
   };

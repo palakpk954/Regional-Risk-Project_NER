@@ -1,24 +1,15 @@
 import { NavLink } from 'react-router-dom';
-import { BarChart3, Building2, DatabaseBackup, LayoutDashboard, PlusCircle, Users, User } from 'lucide-react';
+import { BarChart3, Building2, DatabaseBackup, LayoutDashboard, SlidersHorizontal } from 'lucide-react';
 import { cn } from '../lib/utils';
 
-const adminNav = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/students', label: 'Students', icon: Users },
+const navItems = [
+  { to: '/', label: 'Engine Dashboard', icon: LayoutDashboard },
   { to: '/migration', label: 'Migration', icon: DatabaseBackup },
-  { to: '/add-company', label: 'Add Company', icon: PlusCircle },
+  { to: '/simulator', label: 'Simulator', icon: SlidersHorizontal },
   { to: '/reports', label: 'Reports', icon: BarChart3 },
 ];
 
-const studentNav = [
-  { to: '/student', label: 'Student Home', icon: LayoutDashboard },
-  { to: '/student/profile', label: 'Profile', icon: User }, // ✅ ADDED
-];
-
-export default function Sidebar({ role }) {
-  // role is 'admin' for TPO, 'student' for students
-  const navItems = role === 'admin' ? adminNav : studentNav;
-
+export default function Sidebar() {
   return (
     <aside className='hidden h-screen w-[260px] shrink-0 border-r border-slate-200 bg-white lg:block'>
       <div className='flex h-16 items-center gap-2 border-b border-slate-200 px-5'>
@@ -26,8 +17,8 @@ export default function Sidebar({ role }) {
           <Building2 className='h-4 w-4' />
         </div>
         <div>
-          <p className='text-sm font-semibold text-slate-900'>PlaceFlow</p>
-          <p className='text-xs text-slate-500'>Placement OS</p>
+          <p className='text-sm font-semibold text-slate-900'>Placify AI</p>
+          <p className='text-xs text-slate-500'>Simulation Engine</p>
         </div>
       </div>
 

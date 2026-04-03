@@ -1,151 +1,129 @@
 import { create } from 'zustand';
-import { createApplication, listApplications, updateApplicationStatus } from '../services/applicationService';
-import { getSession, loginAs } from '../services/authService';
-import { createCompany, listCompanies } from '../services/companyService';
-import { getDataMode, hydrateFromOnline } from '../services/dbService';
-import { importMigrationData, normalizeMigrationRows } from '../services/migrationService';
-import { setMode } from '../services/modeService';
-import { listStudents, enrichStudentsWithPlacement } from '../services/studentService';
+import {
+  defaultSimulationControls,
+  runPlacementEngine,
+  runPlacementSimulation,
+} from '../services/engineService';
 
-function buildViewState() {
-  const auth = getSession();
-  const students = listStudents();
-  const companies = listCompanies();
-  const applications = listApplications();
+const STORAGE_KEY = 'placement_engine_rows_v1';
 
-  const companyMap = new Map(companies.map((company) => [company.id, company]));
-  const studentMap = new Map(students.map((student) => [student.id, student]));
+function loadPersistedRows() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
-  const studentPlacementRows = enrichStudentsWithPlacement(students, applications, companies);
+function persistRows(rows) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(rows || []));
+}
 
-  const applicationViews = applications.map((application) => {
-    const company = companyMap.get(application.companyId);
-    const student = studentMap.get(application.studentId);
-    return {
-      ...application,
-      companyName: company?.name || 'Unknown Company',
-      role: company?.role || 'Role not found',
-      studentName: student?.name || 'Unknown Student',
-    };
-  });
+function buildInitialState() {
+  const inputRows = loadPersistedRows();
+  const engine = runPlacementEngine(inputRows);
+  const simulationControls = { ...defaultSimulationControls };
+  const simulation = runPlacementSimulation(engine, simulationControls);
 
   return {
-    auth,
-    role: auth.role,
-    dataMode: getDataMode(),
-    lastRefreshedAt: new Date().toISOString(),
-    currentStudentId: auth.role === 'student' ? auth.userId : students[0]?.id || null,
-    students,
-    companies,
-    applications,
-    studentPlacementRows,
-    applicationViews,
+    inputRows,
+    engine,
+    simulationControls,
+    simulation,
+    availableBranches: ['All', ...engine.branchPerformance.map((row) => row.branch)],
+    migrationPreviewRows: inputRows,
+    migrationImportMeta: {
+      rawRows: inputRows.length,
+      cleanedRows: inputRows.length,
+    },
+    migrationSource: inputRows.length ? 'Saved local session' : null,
+    migrationErrors: [],
+    loading: false,
+    hasData: engine.kpis.totalStudents > 0,
+    lastProcessedAt: engine.processedAt,
   };
 }
 
-export const usePlacementStore = create((set, get) => ({
-  ...buildViewState(),
-  selectedCompanyFilter: 'all',
-  migrationPreviewRows: [],
-  migrationSource: null,
-  migrationErrors: [],
+export const usePlacementStore = create((set) => ({
+  ...buildInitialState(),
 
-  refreshData: () => {
-    set((state) => ({ ...state, ...buildViewState(), lastRefreshedAt: new Date().toISOString() }));
-  },
+  runMigrationImportFromRows: async (rows, source, importMeta = {}) => {
+    set({ loading: true, migrationErrors: [] });
 
-  hydrateOnlineMode: async () => {
-    await hydrateFromOnline();
-    get().refreshData();
-  },
+    const engine = runPlacementEngine(rows || []);
+    const normalizedRows = engine.records;
+    const errors = normalizedRows.length ? [] : ['No valid rows found after cleaning. Check CSV headers or sheet fields.'];
+    const simulationControls = { ...defaultSimulationControls };
+    const simulation = runPlacementSimulation(engine, simulationControls);
 
-  setDataMode: async (mode) => {
-    const nextMode = setMode(mode);
-    if (nextMode === 'online') {
-      await get().hydrateOnlineMode();
-    }
-    get().refreshData();
-  },
-
-  loginAsRole: (role) => {
-    loginAs(role);
-    get().refreshData();
-  },
-
-  triggerRealtimeRefresh: async () => {
-    if (get().dataMode === 'online') {
-      await get().hydrateOnlineMode();
-    } else {
-      get().refreshData();
-    }
-  },
-
-  setSelectedCompanyFilter: (selectedCompanyFilter) => set({ selectedCompanyFilter }),
-
-  addCompany: (payload) => {
-    const result = createCompany(payload);
-    if (result.ok) {
-      get().refreshData();
-    }
-    return result;
-  },
-
-  applyToCompany: (companyId) => {
-    const state = get();
-    if (!state.currentStudentId) {
-      return { ok: false, error: 'No student selected in session.' };
-    }
-
-    const result = createApplication(state.currentStudentId, companyId);
-    if (result.ok) {
-      get().refreshData();
-    }
-    return result;
-  },
-
-  updateApplicationStatus: (applicationId, nextStatus) => {
-    const state = get();
-    const result = updateApplicationStatus(applicationId, nextStatus, state.role);
-    if (result.ok) {
-      get().refreshData();
-    }
-    return result;
-  },
-
-  importMigrationData: ({ students, companies, previewRows, source }) => {
-    const normalized = normalizeMigrationRows(
-      (previewRows || []).length ? previewRows : students.map((student) => ({ ...student })),
-    );
-
-    importMigrationData({
-      students: (students || []).length ? students : normalized.students,
-      companies: (companies || []).length ? companies : normalized.companies,
-      applications: normalized.applications,
-    });
+    persistRows(normalizedRows);
 
     set({
-      migrationPreviewRows: previewRows || [],
-      migrationSource: source || null,
-      migrationErrors: normalized.errors || [],
+      loading: false,
+      inputRows: normalizedRows,
+      engine,
+      simulationControls,
+      simulation,
+      availableBranches: ['All', ...engine.branchPerformance.map((row) => row.branch)],
+      migrationPreviewRows: normalizedRows,
+      migrationImportMeta: {
+        rawRows: Number(importMeta.rawRows || rows.length || normalizedRows.length),
+        cleanedRows: normalizedRows.length,
+      },
+      migrationSource: source || 'Manual import',
+      migrationErrors: errors,
+      hasData: engine.kpis.totalStudents > 0,
+      lastProcessedAt: engine.processedAt,
     });
-    get().refreshData();
+
+    return {
+      students: engine.kpis.totalStudents,
+      placed: engine.kpis.placedStudents,
+      companies: new Set(
+        engine.records
+          .map((row) => row.company)
+          .filter((company) => company && company !== 'Unassigned'),
+      ).size,
+      applications: normalizedRows.filter((row) => row.company && row.company !== 'Unassigned').length,
+      errors,
+    };
   },
 
-  runMigrationImportFromRows: (rows, source) => {
-    const normalized = normalizeMigrationRows(rows || []);
-    importMigrationData({
-      students: normalized.students,
-      companies: normalized.companies,
-      applications: normalized.applications,
-    });
+  clearEngineData: () => {
+    localStorage.removeItem(STORAGE_KEY);
+    const reset = buildInitialState();
+    set({ ...reset, migrationSource: null });
+  },
 
-    set({
-      migrationPreviewRows: (rows || []).slice(0, 10),
-      migrationSource: source || null,
-      migrationErrors: normalized.errors,
+  updateSimulationControl: (key, value) => {
+    set((state) => {
+      if (state.simulationControls[key] === value) {
+        return state;
+      }
+
+      const controls = { ...state.simulationControls, [key]: value };
+      return {
+        simulationControls: controls,
+        simulation: runPlacementSimulation(state.engine, controls),
+      };
     });
-    get().refreshData();
-    return normalized;
+  },
+
+  applySimulationPreset: (nextValues) => {
+    set((state) => {
+      const controls = { ...state.simulationControls, ...(nextValues || {}) };
+      if (JSON.stringify(controls) === JSON.stringify(state.simulationControls)) {
+        return state;
+      }
+
+      return {
+        simulationControls: controls,
+        simulation: runPlacementSimulation(state.engine, controls),
+      };
+    });
   },
 
   clearMigrationPreview: () => set({ migrationPreviewRows: [], migrationSource: null, migrationErrors: [] }),
