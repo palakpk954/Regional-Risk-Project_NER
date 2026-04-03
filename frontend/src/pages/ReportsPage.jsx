@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -8,8 +8,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { Download, FileText, UploadCloud } from 'lucide-react';
+import { Download, FileText, Sparkles, UploadCloud } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AiReportModal from '../components/AiReportModal';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import PageContainer from '../components/PageContainer';
@@ -23,6 +24,10 @@ export default function ReportsPage() {
   const engine = usePlacementStore((state) => state.engine);
   const simulation = usePlacementStore((state) => state.simulation);
   const hasData = usePlacementStore((state) => state.hasData);
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const companyStats = engine.companyStats || engine.companyDistribution || [];
+  const branchStats = engine.branchStats || engine.branchPerformance || [];
+  const cgpaAnalysis = engine.cgpaAnalysis || engine.cgpaCorrelation || [];
 
   const summaryText = useMemo(() => generateSummaryText(engine, simulation), [engine, simulation]);
   const aiInsights = useMemo(() => generateReportAiInsights(engine, simulation), [engine, simulation]);
@@ -53,12 +58,18 @@ export default function ReportsPage() {
     <PageContainer className='space-y-8'>
       <SectionHeader
         title='Output Layer - Intelligence Report'
-        subtitle='Analytics narrative generated from offline placement engine results.'
+        subtitle='Outcome narrative generated from offline placement analysis results.'
         action={
-          <Button onClick={handleDownload}>
-            <Download className='h-4 w-4' />
-            Download Summary
-          </Button>
+          <div className='flex flex-wrap gap-2'>
+            <Button variant='secondary' onClick={() => setAiModalOpen(true)}>
+              <Sparkles className='h-4 w-4' />
+              Open AI Report Studio
+            </Button>
+            <Button onClick={handleDownload}>
+              <Download className='h-4 w-4' />
+              Download Summary
+            </Button>
+          </div>
         }
       />
 
@@ -119,7 +130,7 @@ export default function ReportsPage() {
           <p className='mt-2 text-3xl font-bold text-indigo-700'>{simulation.projectedPlacementRate}%</p>
         </Card>
         <Card className='card-hover'>
-          <p className='text-sm text-slate-500'>Simulation Delta</p>
+          <p className='text-sm text-slate-500'>Expected Improvement</p>
           <p className={`mt-2 text-3xl font-bold ${simulation.delta >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
             {simulation.delta >= 0 ? '+' : ''}{simulation.delta}%
           </p>
@@ -131,7 +142,7 @@ export default function ReportsPage() {
           <SectionHeader title='Branch Performance Rate' subtitle='Placement percentage by branch' />
           <div className='h-[300px]'>
             <ResponsiveContainer width='100%' height='100%'>
-              <BarChart data={engine.branchPerformance}>
+              <BarChart data={branchStats}>
                 <CartesianGrid strokeDasharray='3 3' />
                 <XAxis dataKey='branch' />
                 <YAxis />
@@ -146,7 +157,7 @@ export default function ReportsPage() {
           <SectionHeader title='CGPA vs Placement Correlation' subtitle='Rate distribution by CGPA bucket' />
           <div className='h-[300px]'>
             <ResponsiveContainer width='100%' height='100%'>
-              <BarChart data={engine.cgpaCorrelation}>
+              <BarChart data={cgpaAnalysis}>
                 <CartesianGrid strokeDasharray='3 3' />
                 <XAxis dataKey='bucket' />
                 <YAxis />
@@ -196,6 +207,12 @@ export default function ReportsPage() {
         </div>
       </Card>
 
+      {companyStats.length === 0 ? (
+        <Card className='card-hover border-dashed border-slate-300 bg-slate-50'>
+          <SectionHeader title='No Company Distribution Yet' subtitle='Import data with selected students to unlock company-level report insights.' />
+        </Card>
+      ) : null}
+
       <Card className='card-hover'>
         <SectionHeader
           title='Summary Preview'
@@ -206,6 +223,12 @@ export default function ReportsPage() {
           {summaryText}
         </pre>
       </Card>
+
+      <AiReportModal
+        open={aiModalOpen}
+        onClose={() => setAiModalOpen(false)}
+        summary={summaryText}
+      />
     </PageContainer>
   );
 }

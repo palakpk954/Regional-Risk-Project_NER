@@ -5,9 +5,11 @@ import Skeleton from './components/ui/Skeleton';
 
 // Lazy loaded pages
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const LaunchpadPage = lazy(() => import('./pages/LaunchpadPage'));
 const MigrationPage = lazy(() => import('./pages/MigrationPage'));
 const ReportsPage = lazy(() => import('./pages/ReportsPage'));
 const SimulatorPage = lazy(() => import('./pages/SimulatorPage'));
+const StudentsPage = lazy(() => import('./pages/StudentsPage'));
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
       <Routes>
         <Route element={<AppShell />}>
           <Route path='/' element={<AdminDashboard />} />
+          <Route path='/launchpad' element={<LaunchpadPage />} />
+          <Route path='/students' element={<StudentsPage />} />
           <Route path='/migration' element={<MigrationPage />} />
           <Route path='/reports' element={<ReportsPage />} />
           <Route path='/simulator' element={<SimulatorPage />} />

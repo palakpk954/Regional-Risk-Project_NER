@@ -25,10 +25,14 @@ export default function SimulatorPage() {
     [engine, simulation],
   );
   const [answer, setAnswer] = useState(defaultAnswer);
+  const branchStats = useMemo(
+    () => engine.branchStats || engine.branchPerformance || [],
+    [engine.branchStats, engine.branchPerformance],
+  );
 
   const weakestBranch = useMemo(
-    () => engine.branchPerformance[engine.branchPerformance.length - 1]?.branch || 'All',
-    [engine.branchPerformance],
+    () => branchStats[branchStats.length - 1]?.branch || 'All',
+    [branchStats],
   );
 
   const presets = useMemo(() => {
@@ -85,13 +89,13 @@ export default function SimulatorPage() {
   return (
     <PageContainer className='space-y-8'>
       <SectionHeader
-        title='Placify AI Simulation Lab'
-        subtitle='Tune strategy controls and watch simulation impact update instantly.'
+        title='Student Outcome Planner'
+        subtitle='Tune support controls and review expected placement outcomes instantly.'
       />
 
       <div className='grid gap-5 lg:grid-cols-5'>
         <Card className='lg:col-span-2 card-hover'>
-          <SectionHeader title='Scenario Controls' subtitle='Set thresholds and branch scope for this simulation run.' />
+          <SectionHeader title='Planning Controls' subtitle='Set threshold and branch scope for this what-if run.' />
 
           <div className='mb-5 grid gap-2 sm:grid-cols-3 lg:grid-cols-1'>
             {presets.map((preset) => (
@@ -149,11 +153,11 @@ export default function SimulatorPage() {
         </Card>
 
         <Card className='lg:col-span-3 bg-gradient-to-br from-white to-indigo-50/60 card-hover'>
-          <SectionHeader title='Simulation Output' subtitle='Projected outcomes recomputed on every control change.' />
+          <SectionHeader title='Planner Output' subtitle='Projected outcomes recomputed on every control change.' />
 
           <div className='grid gap-3 sm:grid-cols-3'>
             <div className='rounded-xl border border-slate-200 bg-white p-4 transition-all hover:-translate-y-0.5'>
-              <p className='text-xs uppercase tracking-wide text-slate-500'>Projected Placement</p>
+              <p className='text-xs uppercase tracking-wide text-slate-500'>Projected Placement Rate</p>
               <AnimatedNumber
                 value={simulation.projectedPlacementRate}
                 decimals={1}
@@ -173,7 +177,7 @@ export default function SimulatorPage() {
                 simulation.delta >= 0 ? 'border-emerald-200 bg-emerald-50/80' : 'border-rose-200 bg-rose-50/80'
               }`}
             >
-              <p className='text-xs uppercase tracking-wide text-slate-500'>Change vs Baseline</p>
+              <p className='text-xs uppercase tracking-wide text-slate-500'>Expected Change vs Current Cycle</p>
               <p className={`mt-2 inline-flex items-center gap-1 text-3xl font-bold ${simulation.delta >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
                 {simulation.delta >= 0 ? <ArrowUpRight className='h-5 w-5' /> : <ArrowDownRight className='h-5 w-5' />}
                 <AnimatedNumber
@@ -187,7 +191,7 @@ export default function SimulatorPage() {
           </div>
 
           <div className='mt-4 rounded-xl border border-indigo-100 bg-white p-3 text-sm text-slate-600'>
-            Scoped baseline is {simulation.baselineRate}% for {simulation.controls.branchFilter} and global baseline is {simulation.globalBaselineRate}%.
+            Baseline is {simulation.baselineRate}% for {simulation.controls.branchFilter} and overall campus baseline is {simulation.globalBaselineRate}%.
           </div>
 
           <div className='mt-4 space-y-2'>
@@ -203,8 +207,8 @@ export default function SimulatorPage() {
 
       <Card className='card-hover'>
         <SectionHeader
-          title='Offline AI Copilot'
-          subtitle='Rule-based copilot responds with clear insight, reason, and suggestion blocks.'
+          title='Offline Placement Copilot'
+          subtitle='Rule-based copilot explains insight, reason, and next action clearly.'
           action={<Bot className='h-4 w-4 text-indigo-600' />}
         />
 

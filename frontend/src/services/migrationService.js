@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
 
 const FIELD_ALIASES = {
   name: ['name', 'studentname', 'student', 'candidate'],
@@ -17,9 +18,21 @@ function normalizeKey(value) {
   return normalizeText(value).toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
+function getFileExtension(filename) {
+  const text = normalizeText(filename);
+  const dot = text.lastIndexOf('.');
+  if (dot < 0) return '';
+  return text.slice(dot + 1).toLowerCase();
+}
+
 function toNumber(value) {
   const numeric = Number(String(value ?? '').replace(/,/g, '.'));
   return Number.isFinite(numeric) ? Number(numeric.toFixed(2)) : 0;
+}
+
+function normalizeCgpa(value) {
+  const numeric = toNumber(value);
+  return Math.max(0, Math.min(10, numeric));
 }
 
 function normalizeStatus(value) {
@@ -57,7 +70,7 @@ function canonicalizeStudent(row, index) {
 
   const name = pickField(row, 'name');
   const email = pickField(row, 'email');
-  const cgpa = toNumber(pickField(row, 'cgpa'));
+  const cgpa = normalizeCgpa(pickField(row, 'cgpa'));
   const branch = pickField(row, 'branch') || 'Unknown';
   const company = pickField(row, 'company') || 'Unassigned';
   const status = normalizeStatus(pickField(row, 'status'));
@@ -102,8 +115,12 @@ function dedupeStudents(students) {
 
 function hasUsefulHeader(fields = []) {
   const normalized = (fields || []).map((field) => normalizeKey(field));
-  const aliases = Object.values(FIELD_ALIASES).flat();
-  return normalized.some((header) => aliases.some((alias) => header === alias || header.includes(alias)));
+  const matchedGroups = Object.values(FIELD_ALIASES).reduce((count, aliases) => {
+    const matched = normalized.some((header) => aliases.some((alias) => header === alias || header.includes(alias)));
+    return count + (matched ? 1 : 0);
+  }, 0);
+
+  return matchedGroups >= 3;
 }
 
 function cleanStudentRows(rows) {
@@ -159,6 +176,11 @@ function extractSheetMeta(url) {
 
 export function parseCsvContent(file) {
   return new Promise((resolve, reject) => {
+    if (!file) {
+      reject(new Error('No file selected. Please upload CSV or Excel data.'));
+      return;
+    }
+
     Papa.parse(file, {
       header: true,
       skipEmptyLines: 'greedy',
@@ -173,9 +195,14 @@ export function parseCsvContent(file) {
         if (!hasUsefulHeader(fields)) {
           reject(
             new Error(
-              'CSV headers are invalid. Expected columns like name, email, cgpa, branch, company, status.',
+              'CSV headers are invalid. Expected at least 3 key columns among: name, email, cgpa, branch, company, status.',
             ),
           );
+          return;
+        }
+
+        if (!(result.data || []).length) {
+          reject(new Error('CSV is empty. Please upload a file with placement rows.'));
           return;
         }
 
@@ -200,6 +227,75 @@ export function parseCsvContent(file) {
   });
 }
 
+export async function parseExcelContent(file) {
+  if (!file) {
+    throw new Error('No file selected. Please upload CSV or Excel data.');
+  }
+
+  const extension = getFileExtension(file?.name);
+  if (!['xlsx', 'xls'].includes(extension)) {
+    throw new Error('Please upload a valid Excel file (.xlsx or .xls).');
+  }
+
+  let workbook;
+  try {
+    const buffer = await file.arrayBuffer();
+    workbook = XLSX.read(buffer, { type: 'array' });
+  } catch {
+    throw new Error('Unable to read Excel file. Please verify the file format.');
+  }
+
+  const firstSheetName = workbook?.SheetNames?.[0];
+  if (!firstSheetName) {
+    throw new Error('Excel file has no readable worksheet.');
+  }
+
+  const worksheet = workbook.Sheets[firstSheetName];
+  const rawRows = XLSX.utils.sheet_to_json(worksheet, {
+    defval: '',
+    raw: false,
+  });
+
+  if (!rawRows.length) {
+    throw new Error('Excel file is empty. Please upload a sheet with placement rows.');
+  }
+
+  const fields = rawRows.length ? Object.keys(rawRows[0]) : [];
+  if (!hasUsefulHeader(fields)) {
+    throw new Error('Excel headers are invalid. Expected at least 3 key columns among: name, email, cgpa, branch, company, status.');
+  }
+
+  const students = cleanStudentRows(rawRows);
+  if (!students.length) {
+    throw new Error('Excel has no valid student rows after cleaning.');
+  }
+
+  return {
+    sourceName: file?.name || `Excel (${firstSheetName})`,
+    rawRows: rawRows.length,
+    cleanedRows: students.length,
+    students,
+  };
+}
+
+export function parseUploadedFile(file) {
+  if (!file) {
+    throw new Error('No file selected. Please upload CSV, XLSX, or XLS files.');
+  }
+
+  const extension = getFileExtension(file?.name);
+
+  if (extension === 'csv') {
+    return parseCsvContent(file);
+  }
+
+  if (extension === 'xlsx' || extension === 'xls') {
+    return parseExcelContent(file);
+  }
+
+  throw new Error('Unsupported file type. Please upload CSV, XLSX, or XLS files.');
+}
+
 export async function importRowsFromGoogleSheetUrl(url) {
   const { spreadsheetId, gid } = extractSheetMeta(url);
   if (!spreadsheetId) {
@@ -220,6 +316,15 @@ export async function importRowsFromGoogleSheetUrl(url) {
   }
 
   const rawRows = gvizTableToRows(payload.table);
+  if (!rawRows.length) {
+    throw new Error('Google Sheet is empty. Add placement rows before importing.');
+  }
+
+  const fields = Object.keys(rawRows[0] || {});
+  if (!hasUsefulHeader(fields)) {
+    throw new Error('Sheet headers are invalid. Expected at least 3 key columns among: name, email, cgpa, branch, company, status.');
+  }
+
   const students = cleanStudentRows(rawRows);
 
   if (!students.length) {

@@ -8,7 +8,7 @@ import Input from '../components/Input';
 import PageContainer from '../components/PageContainer';
 import SectionHeader from '../components/SectionHeader';
 import Skeleton from '../components/ui/Skeleton';
-import { importRowsFromGoogleSheetUrl, mockGoogleSheetData, parseCsvContent } from '../services/migrationService';
+import { importRowsFromGoogleSheetUrl, mockGoogleSheetData, parseUploadedFile } from '../services/migrationService';
 import { usePlacementStore } from '../store/usePlacementStore';
 
 export default function MigrationPage() {
@@ -60,13 +60,13 @@ export default function MigrationPage() {
     });
   };
 
-  const parseCsvFile = async (file) => {
+  const parseDataFile = async (file) => {
     try {
       setCsvError('');
-      const payload = await parseCsvContent(file);
+      const payload = await parseUploadedFile(file);
       await handleRows(payload);
     } catch (error) {
-      setCsvError(error.message || 'Invalid CSV file. Please check headers and values.');
+      setCsvError(error.message || 'Invalid file. Please check headers and values.');
     }
   };
 
@@ -91,6 +91,26 @@ export default function MigrationPage() {
     });
   };
 
+  const importBuiltInDemo = async () => {
+    try {
+      setCsvError('');
+      const response = await fetch('/placify-demo.csv');
+      if (!response.ok) {
+        throw new Error(`Unable to load built-in demo file (HTTP ${response.status}).`);
+      }
+
+      const text = await response.text();
+      const file = new File([text], 'placify-demo.csv', { type: 'text/csv' });
+      const payload = await parseUploadedFile(file);
+      await handleRows({
+        ...payload,
+        sourceName: 'Placify Built-in Demo (CSV)',
+      });
+    } catch (error) {
+      setCsvError(error.message || 'Failed to import built-in demo dataset.');
+    }
+  };
+
   const previewColumns = useMemo(() => {
     const row = migrationPreviewRows[0];
     if (!row) return [];
@@ -106,29 +126,36 @@ export default function MigrationPage() {
     <PageContainer className='space-y-8'>
       <SectionHeader
         title='Input Layer'
-        subtitle='Upload CSV or pull Google Sheet rows. Engine processing starts immediately after import.'
+        subtitle='Upload CSV/Excel or pull Google Sheet rows. Engine processing starts immediately after import.'
       />
 
       <div className='grid gap-4 lg:grid-cols-2'>
         <Card className='card-hover'>
-          <h3 className='text-base font-semibold text-slate-900'>CSV Upload</h3>
-          <p className='mt-1 text-sm text-slate-500'>Upload any placement sheet with columns such as name, branch, company, cgpa, status.</p>
+          <h3 className='text-base font-semibold text-slate-900'>CSV or Excel Upload</h3>
+          <p className='mt-1 text-sm text-slate-500'>Upload placement files with columns like name, branch, company, cgpa, and status.</p>
 
           <label className='mt-4 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-8 text-center transition hover:border-indigo-300 hover:bg-indigo-50'>
             <FileUp className='h-6 w-6 text-slate-500' />
-            <span className='mt-2 text-sm font-medium text-slate-700'>Click to upload CSV</span>
+            <span className='mt-2 text-sm font-medium text-slate-700'>Click to upload CSV or Excel</span>
             <input
               type='file'
-              accept='.csv'
+              accept='.csv,.xlsx,.xls'
               className='hidden'
               onChange={(event) => {
                 const file = event.target.files?.[0];
                 if (file) {
-                  void parseCsvFile(file);
+                  void parseDataFile(file);
                 }
               }}
             />
           </label>
+
+          <div className='mt-3 flex items-center justify-between gap-2 rounded-xl border border-indigo-100 bg-indigo-50 p-3'>
+            <p className='text-xs text-indigo-700'>Need quick demo data? Load our built-in placement CSV in one click.</p>
+            <Button size='sm' variant='secondary' onClick={importBuiltInDemo}>
+              Load Demo Dataset
+            </Button>
+          </div>
 
           {csvError ? <p className='mt-3 text-xs text-rose-600'>{csvError}</p> : null}
         </Card>
@@ -239,7 +266,7 @@ export default function MigrationPage() {
           </>
         ) : (
           <div className='rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500'>
-            Empty state: upload a CSV or import sheet rows to begin processing.
+            Empty state: upload a CSV/Excel file or import sheet rows to begin processing.
           </div>
         )}
       </Card>

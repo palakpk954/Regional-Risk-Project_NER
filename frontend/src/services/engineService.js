@@ -51,6 +51,25 @@ function isRowEmpty(row) {
   return !Object.values(row || {}).some((value) => normalizeText(value));
 }
 
+function normalizeStudentRecord(row, index) {
+  const name = normalizeText(row.name || row.studentName || `Student ${index + 1}`);
+  const email = normalizeText(row.email || `${name.toLowerCase().replace(/\s+/g, '.')}@local.demo`).toLowerCase();
+  const cgpa = toNumber(row.cgpa);
+  const branch = normalizeText(row.branch || 'Unknown');
+  const company = normalizeText(row.company || 'Unassigned');
+  const status = normalizeStatus(row.status);
+
+  return {
+    id: normalizeText(row.id || `engine_${index + 1}`),
+    name,
+    email,
+    cgpa,
+    branch,
+    company,
+    status,
+  };
+}
+
 export function normalizeEngineRows(inputRows) {
   const rows = Array.isArray(inputRows?.students)
     ? inputRows.students
@@ -60,24 +79,7 @@ export function normalizeEngineRows(inputRows) {
 
   const cleaned = rows
     .filter((row) => row && !isRowEmpty(row))
-    .map((row, index) => {
-      const name = normalizeText(row.name || row.studentName || `Student ${index + 1}`);
-      const email = normalizeText(row.email || `${name.toLowerCase().replace(/\s+/g, '.')}@local.demo`).toLowerCase();
-      const cgpa = toNumber(row.cgpa);
-      const branch = normalizeText(row.branch || 'Unknown');
-      const company = normalizeText(row.company || 'Unassigned');
-      const status = normalizeStatus(row.status);
-
-      return {
-        id: normalizeText(row.id || `engine_${index + 1}`),
-        name,
-        email,
-        cgpa,
-        branch,
-        company,
-        status,
-      };
-    });
+    .map((row, index) => normalizeStudentRecord(row, index));
 
   const deduped = new Map();
   cleaned.forEach((student) => {
@@ -96,6 +98,32 @@ export function normalizeEngineRows(inputRows) {
   });
 
   return Array.from(deduped.values());
+}
+
+export function summarizePlacementRecords(inputRows) {
+  const students = normalizeEngineRows(inputRows);
+  const totalStudents = students.length;
+  const placedStudents = students.filter((student) => student.status === PLACED_STATUS).length;
+  const placementRate = safeRate(placedStudents, totalStudents);
+  const companyStats = computeCompanyDistribution(students);
+  const branchStats = computeBranchPerformance(students);
+  const cgpaAnalysis = computeCgpaCorrelation(students);
+  const atRiskStudents = computeAtRisk(students);
+
+  return {
+    records: students,
+    kpis: {
+      totalStudents,
+      placedStudents,
+      placementRate,
+    },
+    companyStats,
+    branchStats,
+    cgpaAnalysis,
+    atRiskStudents,
+    topCompany: companyStats[0] || null,
+    topBranch: branchStats[0] || null,
+  };
 }
 
 function computeCompanyDistribution(students) {
@@ -211,19 +239,15 @@ function buildInsights({
 }
 
 export function runPlacementEngine(inputRows) {
-  const students = normalizeEngineRows(inputRows);
-  const totalStudents = students.length;
-  const placedStudents = students.filter((student) => student.status === PLACED_STATUS).length;
-  const placementRate = safeRate(placedStudents, totalStudents);
-
-  const companyDistribution = computeCompanyDistribution(students);
+  const base = summarizePlacementRecords(inputRows);
+  const students = base.records;
   const companyIntelligence = analyzeCompanyIntelligence(students.map((student) => student.company));
 
   const companyDetectionMap = new Map(
     companyIntelligence.allDetections.map((item) => [item.normalizedName, item]),
   );
 
-  const companyDistributionWithIntel = companyDistribution.map((company) => {
+  const companyStatsWithIntel = base.companyStats.map((company) => {
     const detection = companyDetectionMap.get(normalizeCompanyName(company.name)) || detectCompanyQuality(company.name);
     return {
       ...company,
@@ -233,47 +257,42 @@ export function runPlacementEngine(inputRows) {
     };
   });
 
-  const branchPerformance = computeBranchPerformance(students);
-  const cgpaCorrelation = computeCgpaCorrelation(students);
-  const atRiskStudents = computeAtRisk(students);
-  const prediction = computePrediction(students, placementRate);
+  const prediction = computePrediction(students, base.kpis.placementRate);
 
-  const topBranch = branchPerformance[0] || null;
-  const topCompany = companyDistributionWithIntel[0] || null;
-  const topTechHiringCompany = companyDistributionWithIntel.find((company) => company.isTopTech) || null;
-  const techSelections = companyDistributionWithIntel
+  const topCompany = companyStatsWithIntel[0] || null;
+  const topTechHiringCompany = companyStatsWithIntel.find((company) => company.isTopTech) || null;
+  const techSelections = companyStatsWithIntel
     .filter((company) => company.isTopTech)
     .reduce((sum, company) => sum + company.value, 0);
-  const techSelectionRate = safeRate(techSelections, placedStudents);
+  const techSelectionRate = safeRate(techSelections, base.kpis.placedStudents);
 
   const insights = buildInsights({
     students,
-    branchPerformance,
-    companyDistribution: companyDistributionWithIntel,
-    cgpaCorrelation,
-    placementRate,
+    branchPerformance: base.branchStats,
+    companyDistribution: companyStatsWithIntel,
+    cgpaCorrelation: base.cgpaAnalysis,
+    placementRate: base.kpis.placementRate,
     companyIntelligence,
   });
 
   return {
     processedAt: new Date().toISOString(),
     records: students,
-    kpis: {
-      totalStudents,
-      placedStudents,
-      placementRate,
-    },
-    companyDistribution: companyDistributionWithIntel,
+    kpis: base.kpis,
+    companyStats: companyStatsWithIntel,
+    companyDistribution: companyStatsWithIntel,
     companyIntelligence: {
       ...companyIntelligence,
       topTechHiringCompany,
       techSelections,
       techSelectionRate,
     },
-    branchPerformance,
-    cgpaCorrelation,
-    atRiskStudents,
-    topBranch,
+    branchStats: base.branchStats,
+    branchPerformance: base.branchStats,
+    cgpaAnalysis: base.cgpaAnalysis,
+    cgpaCorrelation: base.cgpaAnalysis,
+    atRiskStudents: base.atRiskStudents,
+    topBranch: base.topBranch,
     topCompany,
     prediction,
     insights,

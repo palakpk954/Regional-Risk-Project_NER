@@ -27,13 +27,14 @@ function buildInitialState() {
   const engine = runPlacementEngine(inputRows);
   const simulationControls = { ...defaultSimulationControls };
   const simulation = runPlacementSimulation(engine, simulationControls);
+  const branchStats = engine.branchStats || engine.branchPerformance || [];
 
   return {
     inputRows,
     engine,
     simulationControls,
     simulation,
-    availableBranches: ['All', ...engine.branchPerformance.map((row) => row.branch)],
+    availableBranches: ['All', ...branchStats.map((row) => row.branch)],
     migrationPreviewRows: inputRows,
     migrationImportMeta: {
       rawRows: inputRows.length,
@@ -58,6 +59,7 @@ export const usePlacementStore = create((set) => ({
     const errors = normalizedRows.length ? [] : ['No valid rows found after cleaning. Check CSV headers or sheet fields.'];
     const simulationControls = { ...defaultSimulationControls };
     const simulation = runPlacementSimulation(engine, simulationControls);
+    const branchStats = engine.branchStats || engine.branchPerformance || [];
 
     persistRows(normalizedRows);
 
@@ -67,7 +69,7 @@ export const usePlacementStore = create((set) => ({
       engine,
       simulationControls,
       simulation,
-      availableBranches: ['All', ...engine.branchPerformance.map((row) => row.branch)],
+      availableBranches: ['All', ...branchStats.map((row) => row.branch)],
       migrationPreviewRows: normalizedRows,
       migrationImportMeta: {
         rawRows: Number(importMeta.rawRows || rows.length || normalizedRows.length),
