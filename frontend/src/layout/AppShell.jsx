@@ -5,33 +5,21 @@ import Topbar from '../components/Topbar';
 import { usePlacementStore } from '../store/usePlacementStore';
 
 export default function AppShell() {
-  const role = usePlacementStore((state) => state.role);
-  const auth = usePlacementStore((state) => state.auth);
-  const dataMode = usePlacementStore((state) => state.dataMode);
-  const lastRefreshedAt = usePlacementStore((state) => state.lastRefreshedAt);
-  const setDataMode = usePlacementStore((state) => state.setDataMode);
-  const triggerRealtimeRefresh = usePlacementStore((state) => state.triggerRealtimeRefresh);
+  const lastProcessedAt = usePlacementStore((state) => state.lastProcessedAt);
+  const clearEngineData = usePlacementStore((state) => state.clearEngineData);
 
   useEffect(() => {
-    void triggerRealtimeRefresh();
-    const timer = setInterval(() => {
-      void triggerRealtimeRefresh();
-    }, 25000);
-
-    return () => clearInterval(timer);
-  }, [triggerRealtimeRefresh]);
+    // Keep document title aligned with the engine-first experience.
+    document.title = 'Placify AI';
+  }, []);
 
   return (
     <div className='flex min-h-screen bg-slate-50'>
-      <Sidebar role={role} />
+      <Sidebar />
       <div className='flex min-w-0 flex-1 flex-col'>
         <Topbar
-          role={role}
-          auth={auth}
-          dataMode={dataMode}
-          lastRefreshedAt={lastRefreshedAt}
-          onModeChange={setDataMode}
-          onRefresh={triggerRealtimeRefresh}
+          lastProcessedAt={lastProcessedAt}
+          onClearData={clearEngineData}
         />
         <main className='flex-1'>
           <Outlet />

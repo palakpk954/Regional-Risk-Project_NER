@@ -53,6 +53,29 @@ h5 {
   }
 }
 
+@keyframes gentle-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+  }
+}
+
 main > div {
   animation: rise-in 240ms ease-out;
+}
+
+.card-hover {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  border-color: #d6dcff;
+}
+
+.pulse-highlight {
+  animation: gentle-pulse 1.3s ease-out;
 }

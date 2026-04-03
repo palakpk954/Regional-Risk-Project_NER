@@ -1,16 +1,67 @@
-# React + Vite
+# Placement Intelligence Engine (Offline)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This frontend is now a fully offline, engine-first placement analytics tool.
 
-Currently, two official plugins are available:
+No backend is required.
+No Supabase setup is required for active flows.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Core Architecture
 
-## React Compiler
+The app is structured as a 3-layer analytical engine:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Input Layer
+- CSV upload
+- Google Sheets import
+- Optional mock sheet import for demo mode
 
-## Expanding the ESLint configuration
+2. Engine Layer
+- `src/services/engineService.js`
+- Processes records into:
+	- total students
+	- placed students
+	- placement rate
+	- company distribution
+	- branch placement performance
+	- CGPA vs placement correlation
+- Generates smart insights:
+	- at-risk students
+	- top performing branch
+	- top hiring company
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. Output Layer
+- Dashboard visual analytics
+- Insight statements
+- Summary report preview and text download
+
+4. Simulation Layer
+- Scenario controls (CGPA threshold, company count, branch)
+- Instant projected placement recomputation
+- Offline AI Copilot with rule-based reasoning
+
+## Storage
+
+- Offline persistence uses `localStorage`
+- Key: `placement_engine_rows_v1`
+- Data is loaded automatically on app startup
+
+## Main Routes
+
+- `/` Engine dashboard
+- `/migration` Input/import layer
+- `/simulator` What-if simulation lab
+- `/reports` Output/report layer
+
+## Run Locally
+
+```bash
+npm install
+npm run dev
+```
+
+## Build Validation
+
+```bash
+npm run build
+```
+
+Current status: production build passes.

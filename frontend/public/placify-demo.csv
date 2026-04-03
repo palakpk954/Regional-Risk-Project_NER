@@ -1,0 +1,13 @@
+name,email,cgpa,branch,company,status
+Aarav Mehta,aarav@college.edu,8.7,CSE,Google,Selected
+Riya Sharma,riya@college.edu,7.9,IT,Microsoft,Selected
+Karan Verma,karan@college.edu,6.8,CSE,TCS,Interview
+Priya Nair,priya@college.edu,5.9,ECE,,Applied
+Sahil Jain,sahil@college.edu,7.3,EEE,Infosys,Applied
+Ananya Roy,ananya@college.edu,8.2,CSE,Amazon,Selected
+Ishaan Gupta,ishaan@college.edu,6.4,ME,Unassigned,Applied
+Nikhil Rao,nikhil@college.edu,7.1,IT,Wipro,Interview
+Megha Singh,megha@college.edu,8.9,CSE,OpenAI,Selected
+Dev Patel,dev@college.edu,6.2,ECE,Capgemini,Applied
+Simran Kaur,simran@college.edu,7.7,IT,Accenture,Selected
+Arjun Bhat,arjun@college.edu,5.8,ME,,Applied

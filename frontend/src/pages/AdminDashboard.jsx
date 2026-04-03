@@ -1,237 +1,39 @@
-import { lazy, Suspense, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BriefcaseBusiness, ClipboardCheck, Rocket, UserCheck } from 'lucide-react';
-import AiReportModal from '../components/AiReportModal';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { ArrowRight, BadgeCheck, DatabaseBackup, Sparkles, SlidersHorizontal, TrendingUp } from 'lucide-react';
+import AnimatedNumber from '../components/AnimatedNumber';
 import Button from '../components/Button';
-import DataTable from '../components/DataTable';
+import Card from '../components/Card';
 import PageContainer from '../components/PageContainer';
 import SectionHeader from '../components/SectionHeader';
-import StatCard from '../components/StatCard';
 import Skeleton from '../components/ui/Skeleton';
-import { statusTone } from '../lib/utils';
-import { getWorkflowTransitions } from '../services/workflowService';
 import { usePlacementStore } from '../store/usePlacementStore';
 
-const AdminInsightsCharts = lazy(() => import('../components/charts/AdminInsightsCharts'));
-
-function toneClasses(tone) {
-  if (tone === 'success') return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-  if (tone === 'warning') return 'bg-amber-50 text-amber-700 border-amber-200';
-  if (tone === 'info') return 'bg-sky-50 text-sky-700 border-sky-200';
-  if (tone === 'danger') return 'bg-rose-50 text-rose-700 border-rose-200';
-  return 'bg-slate-100 text-slate-600 border-slate-200';
-}
-
-const WORKFLOW_STAGES = ['Applied', 'Shortlisted', 'Interview', 'Selected', 'Rejected'];
+const PIE_COLORS = ['#4f46e5', '#2563eb', '#0891b2', '#14b8a6', '#65a30d', '#d97706'];
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const loading = usePlacementStore((state) => state.loading);
+  const hasData = usePlacementStore((state) => state.hasData);
+  const engine = usePlacementStore((state) => state.engine);
+  const simulation = usePlacementStore((state) => state.simulation);
 
-  const students = usePlacementStore((state) => state.students);
-  const companies = usePlacementStore((state) => state.companies);
-  const studentPlacementRows = usePlacementStore((state) => state.studentPlacementRows);
-  const applicationViews = usePlacementStore((state) => state.applicationViews);
-  const selectedCompanyFilter = usePlacementStore((state) => state.selectedCompanyFilter);
-  const setSelectedCompanyFilter = usePlacementStore((state) => state.setSelectedCompanyFilter);
-  const updateStatus = usePlacementStore((state) => state.updateApplicationStatus);
-
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [activeCompany, setActiveCompany] = useState('');
-  const [reportOpen, setReportOpen] = useState(false);
-
-  const todayIso = new Date().toISOString().slice(0, 10);
-
-  const latestApplicationByStudent = useMemo(() => {
-    const latestMap = new Map();
-    applicationViews.forEach((application) => {
-      const previous = latestMap.get(application.studentId);
-      if (!previous || new Date(previous.createdAt).getTime() < new Date(application.createdAt).getTime()) {
-        latestMap.set(application.studentId, application);
-      }
-    });
-    return latestMap;
-  }, [applicationViews]);
-
-  const baseRows = useMemo(() => {
-    return studentPlacementRows.map((row) => {
-      const latest = latestApplicationByStudent.get(row.id);
-      return {
-        ...row,
-        latestApplicationId: latest?.id || null,
-        latestRole: latest?.role || 'N/A',
-        latestStatus: latest?.status || row.status || 'Unassigned',
-      };
-    });
-  }, [studentPlacementRows, latestApplicationByStudent]);
-
-  const filteredStudents = useMemo(() => {
-    return baseRows.filter((row) => {
-      const companyMatch = selectedCompanyFilter === 'all' || row.company === selectedCompanyFilter;
-      const statusMatch = statusFilter === 'all' || row.latestStatus === statusFilter;
-      const searchMatch = row.name.toLowerCase().includes(search.toLowerCase());
-      return companyMatch && statusMatch && searchMatch;
-    });
-  }, [baseRows, search, selectedCompanyFilter, statusFilter]);
-
-  const newApplicationsToday = useMemo(
-    () => applicationViews.filter((application) => String(application.createdAt).startsWith(todayIso)).length,
-    [applicationViews, todayIso],
-  );
-
-  const pendingInterviews = useMemo(
-    () => applicationViews.filter((application) => ['Shortlisted', 'Interview'].includes(application.status)).length,
-    [applicationViews],
-  );
-
-  const selectedCount = useMemo(
-    () => applicationViews.filter((application) => application.status === 'Selected').length,
-    [applicationViews],
-  );
-
-  const activeDrives = useMemo(() => {
-    return companies.filter((company) => !company.deadline || company.deadline >= todayIso).length;
-  }, [companies, todayIso]);
-
-  const companyMetrics = useMemo(() => {
-    const companyMap = new Map(companies.map((company) => [company.id, company]));
-    const metrics = {};
-
-    applicationViews.forEach((application) => {
-      const company = companyMap.get(application.companyId);
-      if (!company) return;
-      if (!metrics[company.name]) {
-        metrics[company.name] = {
-          name: company.name,
-          applicants: 0,
-          selected: 0,
-          students: [],
-        };
-      }
-
-      metrics[company.name].applicants += 1;
-      if (application.status === 'Selected') metrics[company.name].selected += 1;
-      metrics[company.name].students.push({
-        name: application.studentName,
-        status: application.status,
-        role: application.role,
-      });
-    });
-
-    return Object.values(metrics)
-      .map((item) => ({
-        ...item,
-        conversionRate: item.applicants ? ((item.selected / item.applicants) * 100).toFixed(1) : '0.0',
-      }))
-      .sort((a, b) => b.applicants - a.applicants);
-  }, [applicationViews, companies]);
-
-  const bestCompany = companyMetrics[0]?.name || 'N/A';
-  const avgSelectionRate = applicationViews.length ? ((selectedCount / applicationViews.length) * 100).toFixed(1) : '0.0';
-
-  const placementsByCompany = useMemo(() => {
-    return companyMetrics
-      .filter((company) => company.applicants > 0)
-      .map((company) => ({ name: company.name, value: company.applicants }))
-      .sort((a, b) => b.value - a.value);
-  }, [companyMetrics]);
-
-  const companyBarData = useMemo(() => {
-    return companyMetrics
-      .filter((company) => company.applicants > 0)
-      .map((company) => ({ name: company.name, selected: company.selected }))
-      .sort((a, b) => b.selected - a.selected);
-  }, [companyMetrics]);
-
-  const activeCompanyData = useMemo(
-    () => companyMetrics.find((company) => company.name === activeCompany) || companyMetrics[0] || null,
-    [activeCompany, companyMetrics],
-  );
-
-  const workflowCounts = useMemo(
-    () =>
-      WORKFLOW_STAGES.map((stage) => ({
-        stage,
-        count: applicationViews.filter((application) => application.status === stage).length,
-      })),
-    [applicationViews],
-  );
-
-  const tableColumns =
-    selectedCompanyFilter === 'all'
-      ? [
-          { key: 'name', label: 'Name' },
-          { key: 'cgpa', label: 'CGPA' },
-          { key: 'company', label: 'Company' },
-          {
-            key: 'latestStatus',
-            label: 'Status',
-            render: (value, row) => {
-              if (!row.latestApplicationId) return <span className='text-xs text-slate-500'>No application</span>;
-              const options = [value, ...getWorkflowTransitions(value)].filter((s, i, arr) => arr.indexOf(s) === i);
-
-              return (
-                <select
-                  value={value}
-                  onChange={(event) => updateStatus(row.latestApplicationId, event.target.value)}
-                  className={`rounded-lg border px-2 py-1 text-xs font-semibold outline-none ${toneClasses(statusTone(value))}`}
-                >
-                  {options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              );
-            },
-          },
-        ]
-      : [
-          { key: 'name', label: 'Name' },
-          { key: 'latestRole', label: 'Role' },
-          {
-            key: 'latestStatus',
-            label: 'Status',
-            render: (value, row) => {
-              if (!row.latestApplicationId) return <span className='text-xs text-slate-500'>No application</span>;
-              const options = [value, ...getWorkflowTransitions(value)].filter((s, i, arr) => arr.indexOf(s) === i);
-              return (
-                <select
-                  value={value}
-                  onChange={(event) => updateStatus(row.latestApplicationId, event.target.value)}
-                  className={`rounded-lg border px-2 py-1 text-xs font-semibold outline-none ${toneClasses(statusTone(value))}`}
-                >
-                  {options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              );
-            },
-          },
-        ];
-
-  const reportSummary = {
-    totalStudents: students.length,
-    totalApplications: applicationViews.length,
-    selectedCount,
-    pendingInterviews,
-    activeDrives,
-    newApplicationsToday,
-    bestCompany,
-    selectionRate: avgSelectionRate,
-    companyLines: companyMetrics.map(
-      (company) => `- ${company.name}: ${company.selected}/${company.applicants} selected (${company.conversionRate}%)`,
-    ),
-  };
-
-  if (!students.length && !companies.length) {
+  if (loading) {
     return (
       <PageContainer className='space-y-5'>
-        <Skeleton className='h-16 w-full' />
-        <div className='grid gap-4 sm:grid-cols-4'>
-          <Skeleton className='h-28 w-full' />
+        <Skeleton className='h-20 w-full' />
+        <div className='grid gap-4 sm:grid-cols-3'>
           <Skeleton className='h-28 w-full' />
           <Skeleton className='h-28 w-full' />
           <Skeleton className='h-28 w-full' />
@@ -241,143 +43,203 @@ export default function AdminDashboard() {
     );
   }
 
+  if (!hasData) {
+    return (
+      <PageContainer className='space-y-5'>
+        <Card className='border-dashed border-slate-300 bg-gradient-to-br from-indigo-50 via-white to-cyan-50'>
+          <SectionHeader
+            title='Placify AI is ready'
+            subtitle='Upload CSV or Google Sheet rows to compute instant placement intelligence offline.'
+          />
+          <div className='flex flex-wrap items-center gap-3'>
+            <Button onClick={() => navigate('/migration')}>
+              <DatabaseBackup className='h-4 w-4' />
+              Start With Migration
+            </Button>
+            <Button variant='secondary' onClick={() => navigate('/reports')}>
+              <ArrowRight className='h-4 w-4' />
+              Open Reports View
+            </Button>
+          </div>
+        </Card>
+      </PageContainer>
+    );
+  }
+
   return (
-    <PageContainer className='space-y-6'>
+    <PageContainer className='space-y-8'>
       <SectionHeader
-        title='Placement Overview'
-        subtitle='Action-driven control center for migration, workflow, and outcomes'
+        title='Placify AI Intelligence Dashboard'
+        subtitle='Insight-first placement analytics with predictive and simulation-driven decision support.'
         action={
-          <div className='flex flex-wrap items-center gap-2'>
-            <Button variant='secondary' onClick={() => navigate('/migration')}>Import Data</Button>
-            <Button variant='secondary' onClick={() => setReportOpen(true)}>Generate Report</Button>
-            <Button onClick={() => navigate('/add-company')}>Add Company</Button>
+          <div className='flex flex-wrap gap-2'>
+            <Button variant='secondary' onClick={() => navigate('/migration')}>
+              <DatabaseBackup className='h-4 w-4' />
+              Upload New Data
+            </Button>
+            <Button variant='secondary' onClick={() => navigate('/simulator')}>
+              <SlidersHorizontal className='h-4 w-4' />
+              Open Simulator
+            </Button>
+            <Button onClick={() => navigate('/reports')}>
+              <Sparkles className='h-4 w-4' />
+              Generate Report
+            </Button>
           </div>
         }
       />
 
       <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-        <StatCard label='New Applications Today' value={newApplicationsToday} icon={<Rocket className='h-5 w-5' />} />
-        <StatCard label='Pending Interviews' value={pendingInterviews} icon={<ClipboardCheck className='h-5 w-5' />} />
-        <StatCard label='Selected Count' value={selectedCount} icon={<UserCheck className='h-5 w-5' />} />
-        <StatCard label='Active Drives' value={activeDrives} icon={<BriefcaseBusiness className='h-5 w-5' />} />
-      </div>
-
-      <div className='grid gap-4 lg:grid-cols-3'>
-        <div className='rounded-2xl border border-slate-200 bg-white p-5 lg:col-span-2'>
-          <SectionHeader title='Smart Insights' subtitle='Real outcomes from live application data' />
-          <div className='grid gap-3 md:grid-cols-2'>
-            <div className='rounded-xl border border-slate-200 bg-slate-50 p-4'>
-              <p className='text-xs uppercase tracking-wide text-slate-500'>Best Performing Company</p>
-              <p className='mt-2 text-lg font-semibold text-slate-900'>{bestCompany}</p>
-            </div>
-            <div className='rounded-xl border border-slate-200 bg-slate-50 p-4'>
-              <p className='text-xs uppercase tracking-wide text-slate-500'>Average Selection Rate</p>
-              <p className='mt-2 text-lg font-semibold text-slate-900'>{avgSelectionRate}%</p>
-            </div>
-          </div>
-        </div>
-
-        <div className='rounded-2xl border border-slate-200 bg-white p-5'>
-          <SectionHeader title='Quick Filters' subtitle='Admin search and filters' />
-          <div className='space-y-2'>
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder='Search student'
-              className='h-10 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100'
-            />
-            <select
-              value={selectedCompanyFilter}
-              onChange={(event) => setSelectedCompanyFilter(event.target.value)}
-              className='h-10 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100'
-            >
-              <option value='all'>All Companies</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.name}>{company.name}</option>
-              ))}
-            </select>
-            <select
-              value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value)}
-              className='h-10 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100'
-            >
-              <option value='all'>All Status</option>
-              {WORKFLOW_STAGES.map((status) => (
-                <option key={status} value={status}>{status}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <Suspense fallback={<Skeleton className='h-[320px] w-full' />}>
-        <AdminInsightsCharts
-          placementsByCompany={placementsByCompany}
-          companyBarData={companyBarData}
-          selectedCompanyFilter={selectedCompanyFilter}
-          setSelectedCompanyFilter={setSelectedCompanyFilter}
-        />
-      </Suspense>
-
-      <div className='grid gap-4 lg:grid-cols-3'>
-        <div className='rounded-2xl border border-slate-200 bg-white p-5 lg:col-span-2'>
-          <SectionHeader
-            title='Students'
-            subtitle={selectedCompanyFilter === 'all' ? 'Global view with company and CGPA' : 'Company view with status and role'}
+        <Card className='bg-gradient-to-br from-indigo-600 to-indigo-500 text-white shadow-md card-hover'>
+          <p className='text-sm text-indigo-100'>Total Students</p>
+          <AnimatedNumber value={engine.kpis.totalStudents} className='mt-2 block text-4xl font-extrabold' />
+        </Card>
+        <Card className='card-hover'>
+          <p className='text-sm text-slate-500'>Placed Students</p>
+          <AnimatedNumber value={engine.kpis.placedStudents} className='mt-2 block text-4xl font-extrabold text-emerald-700' />
+        </Card>
+        <Card className='card-hover'>
+          <p className='text-sm text-slate-500'>Placement Rate</p>
+          <AnimatedNumber value={engine.kpis.placementRate} decimals={1} suffix='%' className='mt-2 block text-4xl font-extrabold text-slate-900' />
+        </Card>
+        <Card className='card-hover border-emerald-100 bg-emerald-50/70'>
+          <p className='text-sm text-emerald-800'>Top Tech Companies Auto-Detected</p>
+          <AnimatedNumber
+            value={engine.companyIntelligence.detectedTopTechCompanies}
+            className='mt-2 block text-4xl font-extrabold text-emerald-700'
           />
-          <DataTable columns={tableColumns} rows={filteredStudents} emptyText='No students in this filter.' />
-        </div>
+          <p className='mt-1 text-xs text-emerald-800'>
+            {engine.companyIntelligence.totalDistinctCompanies} imported • {engine.companyIntelligence.catalogSize}+ indexed
+          </p>
+        </Card>
+      </div>
 
-        <div className='rounded-2xl border border-slate-200 bg-white p-5'>
-          <SectionHeader title='Company View' subtitle='Click a company to inspect conversion details' />
-          <div className='mb-3 flex flex-wrap gap-2'>
-            {companyMetrics.map((company) => (
-              <button
-                key={company.name}
-                onClick={() => setActiveCompany(company.name)}
-                className={`rounded-full border px-2 py-1 text-xs ${
-                  activeCompanyData?.name === company.name
-                    ? 'border-indigo-200 bg-indigo-50 text-indigo-700'
-                    : 'border-slate-200 bg-white text-slate-600'
-                }`}
-              >
-                {company.name}
-              </button>
+      <div className='grid gap-4 lg:grid-cols-3'>
+        <Card className='lg:col-span-2 border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 card-hover'>
+          <SectionHeader title='Prediction Card' subtitle='Forward-looking estimate from readiness and trend dynamics' />
+          <div className='grid gap-3 sm:grid-cols-3'>
+            <div className='rounded-xl border border-indigo-100 bg-white p-4'>
+              <p className='text-xs uppercase tracking-wide text-slate-500'>Forecasted Rate</p>
+              <AnimatedNumber value={engine.prediction.predictedPlacementRate} decimals={1} suffix='%' className='mt-2 block text-2xl font-bold text-indigo-700' />
+            </div>
+            <div className='rounded-xl border border-indigo-100 bg-white p-4'>
+              <p className='text-xs uppercase tracking-wide text-slate-500'>Readiness Score</p>
+              <AnimatedNumber value={engine.prediction.readinessScore} decimals={1} className='mt-2 block text-2xl font-bold text-slate-900' />
+            </div>
+            <div className='rounded-xl border border-indigo-100 bg-white p-4'>
+              <p className='text-xs uppercase tracking-wide text-slate-500'>Trend</p>
+              <p className='mt-2 inline-flex items-center gap-1 text-lg font-semibold text-emerald-700'>
+                <TrendingUp className='h-4 w-4' />
+                {engine.prediction.trend}
+              </p>
+            </div>
+          </div>
+
+          <div className='mt-3 rounded-xl border border-indigo-100 bg-white p-3 text-sm text-slate-700'>
+            Auto-detected tech hiring share: {engine.companyIntelligence.techSelectionRate}% ({engine.companyIntelligence.techSelections} of {engine.kpis.placedStudents} selected students)
+          </div>
+        </Card>
+
+        <Card className='card-hover'>
+          <SectionHeader title='Simulation Impact Preview' subtitle='Latest simulator delta' />
+          <p className={`text-3xl font-extrabold ${simulation.delta >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+            {simulation.delta >= 0 ? '+' : ''}
+            <AnimatedNumber value={Math.abs(simulation.delta)} decimals={1} suffix='%' />
+          </p>
+          <p className='mt-2 text-sm text-slate-600'>Projected Rate: {simulation.projectedPlacementRate}%</p>
+          <p className='text-sm text-slate-600'>Affected Students: {simulation.studentsAffected}</p>
+          <Button className='mt-3 w-full' variant='secondary' onClick={() => navigate('/simulator')}>
+            Tune Scenario
+          </Button>
+        </Card>
+      </div>
+
+      <Card className='border-indigo-100 bg-indigo-50/80 card-hover'>
+        <SectionHeader title='Top Insight Highlight' subtitle='Most important signal from current engine run' />
+        <p className='text-base font-semibold text-indigo-900'>{engine.insights[0]}</p>
+        {engine.companyIntelligence.topTechHiringCompany ? (
+          <div className='mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs text-emerald-700'>
+            <BadgeCheck className='h-3.5 w-3.5' />
+            Top Tech Hiring Company: {engine.companyIntelligence.topTechHiringCompany.name}
+          </div>
+        ) : null}
+      </Card>
+
+      <div className='grid gap-4 lg:grid-cols-2'>
+        <Card className='card-hover'>
+          <SectionHeader title='Company Distribution' subtitle='Selection volume by company' />
+          <div className='h-[280px]'>
+            <ResponsiveContainer width='100%' height='100%'>
+              <BarChart data={engine.companyDistribution}>
+                <CartesianGrid strokeDasharray='3 3' />
+                <XAxis dataKey='name' />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey='value' fill='#4f46e5' radius={[6, 6, 0, 0]} animationDuration={700} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card className='card-hover'>
+          <SectionHeader title='Branch Performance' subtitle='Placed students by branch' />
+          <div className='h-[280px]'>
+            <ResponsiveContainer width='100%' height='100%'>
+              <PieChart>
+                <Pie
+                  data={engine.branchPerformance}
+                  dataKey='placed'
+                  nameKey='branch'
+                  outerRadius={100}
+                  innerRadius={55}
+                  animationDuration={700}
+                >
+                  {engine.branchPerformance.map((entry, index) => (
+                    <Cell key={entry.branch} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      <div className='grid gap-4 lg:grid-cols-2'>
+        <Card className='card-hover'>
+          <SectionHeader title='Engine Insights' subtitle='Auto-generated from data model' />
+          <div className='space-y-2'>
+            {engine.insights.map((line) => (
+              <p key={line} className='rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700'>
+                {line}
+              </p>
             ))}
           </div>
+        </Card>
 
-          {activeCompanyData ? (
-            <div className='space-y-2'>
-              <div className='rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm'>Applicants: {activeCompanyData.applicants}</div>
-              <div className='rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm'>Selected: {activeCompanyData.selected}</div>
-              <div className='rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm'>Conversion: {activeCompanyData.conversionRate}%</div>
-              <div className='max-h-40 space-y-1 overflow-auto rounded-xl border border-slate-200 p-2'>
-                {activeCompanyData.students.map((student, index) => (
-                  <p key={`${student.name}_${index}`} className='text-xs text-slate-600'>
-                    {student.name} - {student.status}
+        <Card className='card-hover'>
+          <SectionHeader title='At-Risk Student Cards' subtitle='Priority intervention candidates' />
+          <div className='space-y-2'>
+            {engine.atRiskStudents.slice(0, 6).map((student) => (
+              <div key={student.id} className='rounded-xl border border-slate-200 bg-slate-50 p-3'>
+                <div className='flex items-center justify-between'>
+                  <p className='text-sm font-semibold text-slate-900'>{student.name}</p>
+                  <p className={`text-xs font-semibold ${student.riskScore >= 60 ? 'text-rose-700' : 'text-amber-700'}`}>
+                    {student.riskScore}% risk
                   </p>
-                ))}
+                </div>
+                <p className='mt-1 text-xs text-slate-500'>{student.branch} • CGPA {student.cgpa}</p>
+                <div className='mt-2 h-2 overflow-hidden rounded-full bg-slate-200'>
+                  <div
+                    style={{ width: `${student.riskScore}%` }}
+                    className={`h-full rounded-full ${student.riskScore >= 60 ? 'bg-rose-500' : 'bg-amber-500'}`}
+                  />
+                </div>
               </div>
-            </div>
-          ) : (
-            <p className='text-sm text-slate-500'>No company analytics available.</p>
-          )}
-        </div>
+            ))}
+          </div>
+        </Card>
       </div>
-
-      <div className='rounded-2xl border border-slate-200 bg-white p-5'>
-        <SectionHeader title='Workflow Visualization' subtitle='Applied -> Shortlisted -> Interview -> Selected / Rejected' />
-        <div className='grid gap-3 md:grid-cols-5'>
-          {workflowCounts.map((item) => (
-            <div key={item.stage} className='rounded-xl border border-slate-200 bg-slate-50 p-3'>
-              <p className='text-xs font-medium uppercase tracking-wide text-slate-500'>{item.stage}</p>
-              <p className='mt-2 text-xl font-semibold text-slate-900'>{item.count}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <AiReportModal open={reportOpen} onClose={() => setReportOpen(false)} summary={reportSummary} />
     </PageContainer>
   );
 }
