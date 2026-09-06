@@ -1,0 +1,173 @@
+{
+  "zones": [
+    {
+      "name": "NH-10 · Rangpo–Gangtok",
+      "district": "Sikkim",
+      "level": "Critical",
+      "score": 92,
+      "road": "Blocked",
+      "rainfall": "118 mm",
+      "mapPosition": {
+        "x": "63%",
+        "y": "30%"
+      },
+      "id": "zone-1"
+    },
+    {
+      "name": "NH-6 · Jowai bypass",
+      "district": "Meghalaya",
+      "level": "High",
+      "score": 78,
+      "road": "At risk",
+      "rainfall": "86 mm",
+      "mapPosition": {
+        "x": "43%",
+        "y": "58%"
+      },
+      "id": "zone-2"
+    },
+    {
+      "name": "Dima Hasao · Haflong",
+      "district": "Assam",
+      "level": "High",
+      "score": 74,
+      "road": "At risk",
+      "rainfall": "72 mm",
+      "mapPosition": {
+        "x": "57%",
+        "y": "69%"
+      },
+      "id": "zone-3"
+    },
+    {
+      "name": "Tawang · Sela Pass",
+      "district": "Arunachal Pradesh",
+      "level": "Moderate",
+      "score": 56,
+      "road": "Open",
+      "rainfall": "46 mm",
+      "mapPosition": {
+        "x": "78%",
+        "y": "20%"
+      },
+      "id": "zone-4"
+    },
+    {
+      "name": "Mangan · Chungthang",
+      "district": "Sikkim",
+      "level": "Moderate",
+      "score": 51,
+      "road": "Open",
+      "rainfall": "39 mm",
+      "mapPosition": {
+        "x": "71%",
+        "y": "42%"
+      },
+      "id": "zone-5"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "alert-1",
+      "type": "Critical",
+      "title": "NH-10 blocked near 32nd Mile",
+      "detail": "Debris reported by field unit · 18 min ago",
+      "action": "Deploy response team"
+    },
+    {
+      "id": "alert-2",
+      "type": "High",
+      "title": "Rainfall threshold crossed in Jowai",
+      "detail": "86 mm in the last 6 hours · 42 min ago",
+      "action": "Review evacuation plan"
+    },
+    {
+      "id": "alert-3",
+      "type": "Watch",
+      "title": "Slope movement detected at Haflong",
+      "detail": "Satellite pass + sensor correlation · 1 hr ago",
+      "action": "Request field verification"
+    }
+  ],
+  "reports": [],
+  "dataSnapshots": {
+    "weather": {
+      "source": "demo-weather",
+      "readings": [
+        {
+          "district": "Sikkim",
+          "rainfallMm6h": 118,
+          "forecast": "Heavy rain likely"
+        },
+        {
+          "district": "Meghalaya",
+          "rainfallMm6h": 86,
+          "forecast": "Intense showers expected"
+        }
+      ]
+    },
+    "sensors": {
+      "source": "demo-sensors",
+      "readings": [
+        {
+          "zone": "NH-10 · Rangpo–Gangtok",
+          "soilSaturation": 84,
+          "battery": 91
+        },
+        {
+          "zone": "NH-6 · Jowai bypass",
+          "soilSaturation": 71,
+          "battery": 88
+        }
+      ]
+    },
+    "satellite": {
+      "source": "demo-satellite",
+      "observations": [
+        {
+          "zone": "Dima Hasao · Haflong",
+          "movementDetected": true,
+          "confidence": 0.74
+        }
+      ]
+    },
+    "terrain": {
+      "source": "demo-terrain",
+      "observations": [
+        {
+          "zone": "NH-10 · Rangpo–Gangtok",
+          "slopeDegrees": 37,
+          "elevationMeters": 1540
+        }
+      ]
+    },
+    "historical": {
+      "source": "demo-inventory",
+      "events": [
+        {
+          "zone": "NH-10 · Rangpo–Gangtok",
+          "eventsLast5Years": 6
+        },
+        {
+          "zone": "Dima Hasao · Haflong",
+          "eventsLast5Years": 4
+        }
+      ]
+    },
+    "roads": {
+      "source": "demo-road-status",
+      "routes": [
+        {
+          "name": "NH-10 · Sikkim",
+          "status": "Blocked"
+        },
+        {
+          "name": "NH-6 · Meghalaya",
+          "status": "Limited"
+        }
+      ]
+    },
+    "ingestedAt": "2026-09-06T12:23:45.329Z"
+  },
+  "predictionRuns": []
+}

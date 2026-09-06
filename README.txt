@@ -67,3 +67,44 @@ Student can check eligible companies, apply, and track status.
 - This project is designed as a SaaS-style college project.
 - Main focus is workflow + migration + analytics.
 - Backend folder exists, but frontend can run independently.
+
+7) Himālya Watch monitoring API
+
+The frontend now includes the North Eastern Region landslide monitoring MVP.
+
+- Start the API: `cd backend` then `npm start`
+- Optional MongoDB connection: set `MONGO_URI` before starting the API.
+- Without MongoDB, the API uses a persistent JSON store at `backend/data/monitoring.json`, so local reports and alert acknowledgements survive restarts.
+- Frontend API URL defaults to `http://localhost:5000/api`; set `VITE_API_URL` in `frontend/.env` to override it.
+- Monitoring endpoints:
+  - `GET /api/monitoring/overview`
+  - `POST /api/monitoring/field-reports`
+  - `PATCH /api/monitoring/alerts/:id/acknowledge`
+  - `GET /api/monitoring/sources/status`
+  - `POST /api/monitoring/ingest`
+  - `GET /api/monitoring/predictions`
+
+8) Real-data provider adapters
+
+The backend includes adapters with safe demo fallbacks for weather, MQTT sensors, satellite observations, terrain/DEM, historical landslides, and road status. Configure provider URLs or credentials through environment variables before calling `POST /api/monitoring/ingest`:
+
+- `WEATHER_API_URL`
+- `MQTT_BROKER_URL`
+- `SATELLITE_API_URL`
+- `TERRAIN_API_URL`
+- `LANDSLIDE_DATA_URL`
+- `ROAD_STATUS_API_URL`
+
+The current adapters define the normalized contract and preserve raw provider snapshots in `backend/data/monitoring.json`. Replace each adapter's `fetch` implementation with the authenticated provider client once access is approved. Predictions are an explainable baseline score, not an emergency-grade ML warning system.
+
+9) GitHub Pages deployment
+
+The frontend can be hosted on GitHub Pages, but the Express backend and MongoDB must be hosted separately.
+
+1. Push this project to a GitHub repository using the `main` branch.
+2. In GitHub, open Settings -> Pages and set the source to `GitHub Actions`.
+3. If the backend is deployed, add a repository variable named `VITE_API_URL` containing its full API URL, for example `https://your-api.onrender.com/api`.
+4. Push a change or run the `Deploy frontend to GitHub Pages` workflow manually.
+5. Open `https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/`.
+
+The workflow automatically configures the Vite base path for the repository. GitHub Pages only hosts the static frontend; deploy `backend` to Render, Railway, Fly.io, or another Node.js host and use MongoDB Atlas for production storage.
