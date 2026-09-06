@@ -43,7 +43,7 @@
     "globals": "^17.4.0",
     "vite": "^8.0.1"
   },
-  "description": "This frontend is now a fully offline, engine-first placement analytics tool.",
+  "description": "Himālya Watch landslide risk monitoring and early-warning dashboard.",
   "main": "eslint.config.js",
   "keywords": [],
   "author": "",

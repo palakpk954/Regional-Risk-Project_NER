@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/auth');
 const monitoringRoutes = require('./routes/monitoring');
 
 const app = express();
@@ -20,14 +19,13 @@ mongoose
   });
 
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Placify AI API is running' });
+  res.json({ status: 'ok', message: 'Himālya Watch API is running' });
 });
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
-app.use('/api/auth', authRoutes);
 app.use('/api/monitoring', monitoringRoutes);
 
 module.exports = app;
