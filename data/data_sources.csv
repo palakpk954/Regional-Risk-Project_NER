@@ -1,0 +1,7 @@
+source_name,source_type,url,year,data_level,license_notes,status,local_path
+Campus Placement Factors CSV,student_level_anonymized,https://github.com/gouravkhator/Student-Placement-Prediction,unknown,student_level,GitHub repository references Kaggle campus placement dataset; anonymized educational dataset,downloaded,data/raw/github/Placement_Data_Full_Class.csv
+Student Placement Prediction Dataset,student_level_anonymized,https://www.kaggle.com/datasets/ruchikakumbhar/placement-prediction-dataset,unknown,student_level,CC0 Public Domain according to dataset listing,manual_download_required,data/raw/kaggle/
+OpenDataBay Student Placement Prediction Mirror,student_level_anonymized,https://www.opendatabay.com/data/science-research/e5e8537b-6e77-40d4-b0fc-4d7de7fd9ab4,2025,student_level,CC0 Public Domain according to listing,reference_only,data/raw/kaggle/
+NIRF Engineering Ranking 2025,official_aggregate,https://www.nirfindia.org/Rankings/2025/EngineeringRanking.html,2025,institution_aggregate,Official public ranking and institutional aggregate data,reference_only,data/raw/nirf/
+NIRF Engineering Ranking All Institutions 2025,official_aggregate,https://www.nirfindia.org/Rankings/2025/EngineeringRankingALL.html,2025,institution_aggregate,Official public ranking and institutional aggregate data,reference_only,data/raw/nirf/
+Placify JECRC Synthetic Demo Data,synthetic_demo,sample data/JECRC_Placement_Master_2025.csv,2025,student_drive_application_synthetic,Synthetic demo data generated for project testing,available,sample data/JECRC_Placement_Master_2025.csv

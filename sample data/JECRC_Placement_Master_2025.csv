@@ -1,0 +1,73 @@
+Student Name,Enrollment No,Dept,SGPA,Attendance %,Current Back,Placed,Shortlisted,Resume Uploaded,Aptitude Score,Communication Score,Company Name,Role,Package_LPA,Min CGPA,Required Skills,Preferred Skills,Projects,Internships,ATS Score
+Aarav Sharma,JU20251000,CSE,5.8,85,2,No,No,No,57,44,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",1,0,68
+Aditi Singh,JU20251001,CSE AI DevOps,6.4,91,0,Yes,Yes,Yes,66,53,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",2,1,76
+Akshat Khandelwal,JU20251002,IT,7,63,0,No,No,Yes,75,62,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",3,2,85
+Ananya Mathur,JU20251003,ECE,7.6,69,0,No,No,Yes,84,71,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",4,0,43
+Arjun Sharma,JU20251004,Electrical,8.2,74,0,No,Yes,Yes,40,79,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",5,0,52
+Bhavya Singh,JU20251005,Civil,8.9,80,0,No,Yes,Yes,49,88,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",1,2,60
+Chirag Khandelwal,JU20251006,Mechanical,5.9,86,0,No,No,Yes,58,45,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",2,0,69
+Diya Mathur,JU20251007,CSE,6.5,92,1,No,No,Yes,67,54,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",3,1,77
+Harsh Sharma,JU20251008,CSE AI DevOps,7.1,63,0,No,No,Yes,76,63,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",4,0,86
+Isha Singh,JU20251009,IT,7.7,69,0,No,No,Yes,85,72,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",5,0,44
+Kabir Khandelwal,JU20251010,ECE,8.3,75,0,No,Yes,Yes,41,81,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",1,1,53
+Kavya Mathur,JU20251011,Electrical,8.9,81,2,No,No,Yes,50,89,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",2,2,61
+Kunal Sharma,JU20251012,Civil,5.9,87,0,No,No,Yes,59,46,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",3,0,70
+Meera Singh,JU20251013,Mechanical,6.6,92,0,No,No,No,68,55,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",4,1,78
+Naman Khandelwal,JU20251014,CSE,7.2,64,1,No,No,Yes,77,64,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",5,2,87
+Neha Mathur,JU20251015,CSE AI DevOps,7.8,70,0,No,No,Yes,86,73,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",1,0,45
+Pranav Sharma,JU20251016,IT,8.4,76,0,No,Yes,Yes,42,82,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",2,0,54
+Radhika Singh,JU20251017,ECE,9,81,0,Yes,Yes,Yes,51,90,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",3,2,62
+Rahul Khandelwal,JU20251018,Electrical,6,87,0,No,No,Yes,60,47,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",4,0,71
+Riya Mathur,JU20251019,Civil,6.6,93,0,No,No,Yes,69,56,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",5,1,79
+Sahil Sharma,JU20251020,Mechanical,7.2,65,0,No,No,Yes,78,65,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",1,0,88
+Sakshi Singh,JU20251021,CSE,7.9,71,1,No,No,Yes,87,74,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",2,0,46
+Tanmay Khandelwal,JU20251022,CSE AI DevOps,8.5,76,2,No,No,Yes,43,83,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",3,1,55
+Tanya Mathur,JU20251023,IT,9.1,82,0,Yes,Yes,Yes,52,91,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",4,2,63
+Vedant Sharma,JU20251024,ECE,6.1,88,0,No,No,Yes,61,48,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",5,0,72
+Yash Singh,JU20251025,Electrical,6.7,94,0,No,Yes,Yes,70,57,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",1,1,80
+Aarav Khandelwal,JU20251026,Civil,7.3,65,0,No,No,No,79,66,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",2,2,89
+Aditi Mathur,JU20251027,Mechanical,7.9,71,0,No,No,Yes,88,75,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",3,0,47
+Akshat Sharma,JU20251028,CSE,8.5,77,1,No,No,Yes,44,84,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",4,0,56
+Ananya Singh,JU20251029,CSE AI DevOps,9.1,83,0,Yes,Yes,Yes,53,92,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",5,2,64
+Arjun Khandelwal,JU20251030,IT,6.2,89,0,No,No,Yes,62,49,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",1,0,73
+Bhavya Mathur,JU20251031,ECE,6.8,94,0,No,No,Yes,71,58,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",2,1,81
+Chirag Sharma,JU20251032,Electrical,7.4,66,0,No,No,Yes,80,67,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",3,0,90
+Diya Singh,JU20251033,Civil,8,72,2,No,No,Yes,89,76,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",4,0,48
+Harsh Khandelwal,JU20251034,Mechanical,8.6,78,0,No,Yes,Yes,45,85,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",5,1,57
+Isha Mathur,JU20251035,CSE,9.2,83,1,No,No,Yes,54,94,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",1,2,65
+Kabir Sharma,JU20251036,CSE AI DevOps,6.2,89,0,Yes,Yes,Yes,63,50,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",2,0,74
+Kavya Singh,JU20251037,IT,6.8,95,0,No,No,Yes,73,59,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",3,1,82
+Kunal Khandelwal,JU20251038,ECE,7.5,67,0,No,No,Yes,82,68,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",4,2,91
+Meera Mathur,JU20251039,Electrical,8.1,73,0,No,Yes,No,91,77,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",5,0,49
+Naman Sharma,JU20251040,Civil,8.7,78,0,No,Yes,Yes,47,86,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",1,0,58
+Neha Singh,JU20251041,Mechanical,9.3,84,0,Yes,Yes,Yes,56,43,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",2,2,66
+Pranav Khandelwal,JU20251042,CSE,6.3,90,1,No,No,Yes,65,51,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",3,0,75
+Radhika Mathur,JU20251043,CSE AI DevOps,6.9,96,0,No,No,Yes,74,60,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",4,1,83
+Rahul Sharma,JU20251044,IT,7.5,67,2,No,No,Yes,83,69,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",5,0,92
+Riya Singh,JU20251045,ECE,8.1,73,0,No,Yes,Yes,39,78,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",1,0,50
+Sahil Khandelwal,JU20251046,Electrical,8.8,79,0,No,Yes,Yes,48,87,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",2,1,59
+Sakshi Mathur,JU20251047,Civil,9.4,85,0,Yes,Yes,Yes,57,44,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",3,2,67
+Tanmay Sharma,JU20251048,Mechanical,6.4,91,0,No,No,Yes,66,52,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",4,0,76
+Tanya Singh,JU20251049,CSE,7,62,1,No,No,Yes,75,61,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",5,1,84
+Vedant Khandelwal,JU20251050,CSE AI DevOps,7.6,68,0,No,No,Yes,84,70,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",1,2,43
+Yash Mathur,JU20251051,IT,8.2,74,0,No,Yes,Yes,40,79,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",2,0,51
+Aarav Sharma,JU20251052,ECE,8.8,80,0,No,Yes,No,49,88,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",3,0,60
+Aditi Singh,JU20251053,Electrical,5.8,86,0,No,No,Yes,58,45,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",4,2,68
+Akshat Khandelwal,JU20251054,Civil,6.4,91,0,No,No,Yes,67,53,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",5,0,77
+Ananya Mathur,JU20251055,Mechanical,7.1,63,2,No,No,Yes,76,62,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",1,1,85
+Arjun Sharma,JU20251056,CSE,7.7,69,1,No,No,Yes,85,71,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",2,0,44
+Bhavya Singh,JU20251057,CSE AI DevOps,8.3,75,0,No,Yes,Yes,41,80,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",3,0,52
+Chirag Khandelwal,JU20251058,IT,8.9,80,0,No,Yes,Yes,50,89,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",4,1,61
+Diya Mathur,JU20251059,ECE,5.9,86,0,No,No,Yes,59,46,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",5,2,69
+Harsh Sharma,JU20251060,Electrical,6.5,92,0,No,Yes,Yes,68,55,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",1,0,78
+Isha Singh,JU20251061,Civil,7.1,64,0,No,No,Yes,77,63,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",2,1,86
+Kabir Khandelwal,JU20251062,Mechanical,7.7,70,0,No,No,Yes,86,72,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",3,2,45
+Kavya Mathur,JU20251063,CSE,8.4,75,1,No,No,Yes,42,81,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",4,0,53
+Kunal Sharma,JU20251064,CSE AI DevOps,9,81,0,Yes,Yes,Yes,51,90,Infosys,System Engineer,4.2,6.5,"Java, SQL, Communication","React, Git",5,0,62
+Meera Singh,JU20251065,IT,6,87,0,No,Yes,No,60,47,TCS,Ninja Developer,3.6,6,"Aptitude, Java, DBMS","Cloud, Linux",1,2,70
+Naman Khandelwal,JU20251066,ECE,6.6,93,2,No,No,Yes,69,56,Celebal Technologies,Data Analyst Intern,6,7,"Python, SQL, Excel","Power BI, Machine Learning",2,0,79
+Neha Mathur,JU20251067,Electrical,7.2,64,0,No,No,Yes,78,64,Metacube,Software Engineer Intern,7.5,7.5,"DSA, React, Node.js","Docker, AWS",3,1,87
+Pranav Sharma,JU20251068,Civil,7.8,70,0,No,No,Yes,87,73,Capgemini,Analyst,4,6.2,"Aptitude, JavaScript, SQL","Testing, Git",4,0,46
+Radhika Singh,JU20251069,Mechanical,8.4,76,0,No,Yes,Yes,43,82,Persistent Systems,Graduate Engineer Trainee,6.8,7,"DSA, Java, DBMS","Spring Boot, Cloud",5,0,54
+Rahul Khandelwal,JU20251070,CSE,9,82,1,No,No,Yes,52,91,Accenture,Associate Software Engineer,4.5,6.5,"Communication, SQL, Java","React, Agile",1,1,63
+Riya Mathur,JU20251071,CSE AI DevOps,6.1,88,0,No,No,Yes,61,48,Habilelabs,Frontend Developer Intern,5.5,7,"React, JavaScript, CSS","TypeScript, Git",2,2,71

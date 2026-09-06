@@ -34,19 +34,27 @@ export default function Sidebar() {
               to={item.to}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors',
+                  'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                    ? 'bg-gradient-to-r from-teal-300/18 to-sky-400/12 text-teal-50 shadow-[inset_0_0_0_1px_rgba(94,234,212,0.26)]'
+                    : 'text-slate-400 hover:bg-white/[0.055] hover:text-slate-100',
                 )
               }
             >
-              <Icon className='h-4 w-4' />
+              <Icon className='h-4 w-4 transition-transform duration-200 group-hover:scale-105' />
               {item.label}
             </NavLink>
           );
         })}
       </nav>
+
+      <div className='p-3'>
+        <div className='rounded-2xl border border-white/10 bg-white/[0.035] p-3'>
+          <p className='text-xs font-semibold uppercase tracking-wide text-slate-500'>Workflow</p>
+          <p className='mt-1 text-sm font-semibold text-white'>Ingest, validate, analyze.</p>
+          <p className='mt-1 text-xs text-slate-400'>Start with data ingestion, then review risks and reports.</p>
+        </div>
+      </div>
     </aside>
   );
 }

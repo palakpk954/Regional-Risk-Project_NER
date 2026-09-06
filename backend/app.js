@@ -20,7 +20,7 @@ mongoose
   });
 
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Placement Dashboard API is running' });
+  res.json({ status: 'ok', message: 'Placify AI API is running' });
 });
 
 app.get('/api/health', (req, res) => {

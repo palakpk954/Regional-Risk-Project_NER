@@ -58,6 +58,29 @@ export default function Topbar({ lastProcessedAt, onClearData }) {
           </div>
         </div>
 
+        <nav className='hidden items-center gap-1 xl:flex'>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-semibold transition ${
+                    isActive
+                      ? 'bg-sky-100 text-sky-700 dark:bg-sky-400/15 dark:text-sky-200'
+                      : 'text-slate-500 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white'
+                  }`
+                }
+              >
+                <Icon className='h-4 w-4' />
+                {item.label}
+              </NavLink>
+            );
+          })}
+        </nav>
+
         <div className='flex items-center gap-2'>
           <Button variant='secondary' size='sm' className='hidden sm:inline-flex' onClick={onClearData}>
             <Trash2 className='h-4 w-4' />

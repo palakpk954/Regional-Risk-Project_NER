@@ -1,0 +1,73 @@
+Student Name,Branch,Resume Uploaded,ATS Score,Keyword Match Score,Missing Sections,Weak Project Description,Github Link,LinkedIn Link
+Aarav Sharma,CSE,No,68,68,Projects; Certifications,Yes,https://github.com/jecrc-demo/student-1,https://linkedin.com/in/jecrc-student-1
+Aditi Singh,CSE AI DevOps,Yes,76,69,None,No,,https://linkedin.com/in/jecrc-student-2
+Akshat Khandelwal,IT,Yes,85,71,None,No,,https://linkedin.com/in/jecrc-student-3
+Ananya Mathur,ECE,Yes,43,35,Achievements,No,https://github.com/jecrc-demo/student-4,https://linkedin.com/in/jecrc-student-4
+Arjun Sharma,Electrical,Yes,52,52,None,Yes,,https://linkedin.com/in/jecrc-student-5
+Bhavya Singh,Civil,Yes,60,53,Projects; Certifications,No,,https://linkedin.com/in/jecrc-student-6
+Chirag Khandelwal,Mechanical,Yes,69,55,Achievements,No,https://github.com/jecrc-demo/student-7,https://linkedin.com/in/jecrc-student-7
+Diya Mathur,CSE,Yes,77,56,None,No,,https://linkedin.com/in/jecrc-student-8
+Harsh Sharma,CSE AI DevOps,Yes,86,86,None,Yes,,https://linkedin.com/in/jecrc-student-9
+Isha Singh,IT,Yes,44,37,Achievements,No,https://github.com/jecrc-demo/student-10,https://linkedin.com/in/jecrc-student-10
+Kabir Khandelwal,ECE,Yes,53,39,Projects; Certifications,No,,https://linkedin.com/in/jecrc-student-11
+Kavya Mathur,Electrical,Yes,61,40,None,No,,https://linkedin.com/in/jecrc-student-12
+Kunal Sharma,Civil,Yes,70,70,Achievements,Yes,https://github.com/jecrc-demo/student-13,https://linkedin.com/in/jecrc-student-13
+Meera Singh,Mechanical,No,78,71,None,No,,https://linkedin.com/in/jecrc-student-14
+Naman Khandelwal,CSE,Yes,87,73,None,No,,https://linkedin.com/in/jecrc-student-15
+Neha Mathur,CSE AI DevOps,Yes,45,35,Projects; Certifications,No,https://github.com/jecrc-demo/student-16,https://linkedin.com/in/jecrc-student-16
+Pranav Sharma,IT,Yes,54,54,None,Yes,,https://linkedin.com/in/jecrc-student-17
+Radhika Singh,ECE,Yes,62,55,None,No,,https://linkedin.com/in/jecrc-student-18
+Rahul Khandelwal,Electrical,Yes,71,57,Achievements,No,https://github.com/jecrc-demo/student-19,https://linkedin.com/in/jecrc-student-19
+Riya Mathur,Civil,Yes,79,58,None,No,,https://linkedin.com/in/jecrc-student-20
+Sahil Sharma,Mechanical,Yes,88,88,Projects; Certifications,Yes,,https://linkedin.com/in/jecrc-student-21
+Sakshi Singh,CSE,Yes,46,39,Achievements,No,https://github.com/jecrc-demo/student-22,https://linkedin.com/in/jecrc-student-22
+Tanmay Khandelwal,CSE AI DevOps,Yes,55,41,None,No,,https://linkedin.com/in/jecrc-student-23
+Tanya Mathur,IT,Yes,63,42,None,No,,https://linkedin.com/in/jecrc-student-24
+Vedant Sharma,ECE,Yes,72,72,Achievements,Yes,https://github.com/jecrc-demo/student-25,https://linkedin.com/in/jecrc-student-25
+Yash Singh,Electrical,Yes,80,73,Projects; Certifications,No,,https://linkedin.com/in/jecrc-student-26
+Aarav Khandelwal,Civil,No,89,75,None,No,,https://linkedin.com/in/jecrc-student-27
+Aditi Mathur,Mechanical,Yes,47,35,Achievements,No,https://github.com/jecrc-demo/student-28,https://linkedin.com/in/jecrc-student-28
+Akshat Sharma,CSE,Yes,56,56,None,Yes,,https://linkedin.com/in/jecrc-student-29
+Ananya Singh,CSE AI DevOps,Yes,64,57,None,No,,https://linkedin.com/in/jecrc-student-30
+Arjun Khandelwal,IT,Yes,73,59,Projects; Certifications,No,https://github.com/jecrc-demo/student-31,https://linkedin.com/in/jecrc-student-31
+Bhavya Mathur,ECE,Yes,81,60,None,No,,https://linkedin.com/in/jecrc-student-32
+Chirag Sharma,Electrical,Yes,90,90,None,Yes,,https://linkedin.com/in/jecrc-student-33
+Diya Singh,Civil,Yes,48,41,Achievements,No,https://github.com/jecrc-demo/student-34,https://linkedin.com/in/jecrc-student-34
+Harsh Khandelwal,Mechanical,Yes,57,43,None,No,,https://linkedin.com/in/jecrc-student-35
+Isha Mathur,CSE,Yes,65,44,Projects; Certifications,No,,https://linkedin.com/in/jecrc-student-36
+Kabir Sharma,CSE AI DevOps,Yes,74,74,Achievements,Yes,https://github.com/jecrc-demo/student-37,https://linkedin.com/in/jecrc-student-37
+Kavya Singh,IT,Yes,82,75,None,No,,https://linkedin.com/in/jecrc-student-38
+Kunal Khandelwal,ECE,Yes,91,77,None,No,,https://linkedin.com/in/jecrc-student-39
+Meera Mathur,Electrical,No,49,35,Achievements,No,https://github.com/jecrc-demo/student-40,https://linkedin.com/in/jecrc-student-40
+Naman Sharma,Civil,Yes,58,58,Projects; Certifications,Yes,,https://linkedin.com/in/jecrc-student-41
+Neha Singh,Mechanical,Yes,66,59,None,No,,https://linkedin.com/in/jecrc-student-42
+Pranav Khandelwal,CSE,Yes,75,61,Achievements,No,https://github.com/jecrc-demo/student-43,https://linkedin.com/in/jecrc-student-43
+Radhika Mathur,CSE AI DevOps,Yes,83,62,None,No,,https://linkedin.com/in/jecrc-student-44
+Rahul Sharma,IT,Yes,92,92,None,Yes,,https://linkedin.com/in/jecrc-student-45
+Riya Singh,ECE,Yes,50,43,Projects; Certifications,No,https://github.com/jecrc-demo/student-46,https://linkedin.com/in/jecrc-student-46
+Sahil Khandelwal,Electrical,Yes,59,45,None,No,,https://linkedin.com/in/jecrc-student-47
+Sakshi Mathur,Civil,Yes,67,46,None,No,,https://linkedin.com/in/jecrc-student-48
+Tanmay Sharma,Mechanical,Yes,76,76,Achievements,Yes,https://github.com/jecrc-demo/student-49,https://linkedin.com/in/jecrc-student-49
+Tanya Singh,CSE,Yes,84,77,None,No,,https://linkedin.com/in/jecrc-student-50
+Vedant Khandelwal,CSE AI DevOps,Yes,43,35,Projects; Certifications,No,,https://linkedin.com/in/jecrc-student-51
+Yash Mathur,IT,Yes,51,35,Achievements,No,https://github.com/jecrc-demo/student-52,https://linkedin.com/in/jecrc-student-52
+Aarav Sharma,ECE,No,60,60,None,Yes,,https://linkedin.com/in/jecrc-student-53
+Aditi Singh,Electrical,Yes,68,61,None,No,,https://linkedin.com/in/jecrc-student-54
+Akshat Khandelwal,Civil,Yes,77,63,Achievements,No,https://github.com/jecrc-demo/student-55,https://linkedin.com/in/jecrc-student-55
+Ananya Mathur,Mechanical,Yes,85,64,Projects; Certifications,No,,https://linkedin.com/in/jecrc-student-56
+Arjun Sharma,CSE,Yes,44,44,None,Yes,,https://linkedin.com/in/jecrc-student-57
+Bhavya Singh,CSE AI DevOps,Yes,52,45,Achievements,No,https://github.com/jecrc-demo/student-58,https://linkedin.com/in/jecrc-student-58
+Chirag Khandelwal,IT,Yes,61,47,None,No,,https://linkedin.com/in/jecrc-student-59
+Diya Mathur,ECE,Yes,69,48,None,No,,https://linkedin.com/in/jecrc-student-60
+Harsh Sharma,Electrical,Yes,78,78,Projects; Certifications,Yes,https://github.com/jecrc-demo/student-61,https://linkedin.com/in/jecrc-student-61
+Isha Singh,Civil,Yes,86,79,None,No,,https://linkedin.com/in/jecrc-student-62
+Kabir Khandelwal,Mechanical,Yes,45,35,None,No,,https://linkedin.com/in/jecrc-student-63
+Kavya Mathur,CSE,Yes,53,35,Achievements,No,https://github.com/jecrc-demo/student-64,https://linkedin.com/in/jecrc-student-64
+Kunal Sharma,CSE AI DevOps,Yes,62,62,None,Yes,,https://linkedin.com/in/jecrc-student-65
+Meera Singh,IT,No,70,63,Projects; Certifications,No,,https://linkedin.com/in/jecrc-student-66
+Naman Khandelwal,ECE,Yes,79,65,Achievements,No,https://github.com/jecrc-demo/student-67,https://linkedin.com/in/jecrc-student-67
+Neha Mathur,Electrical,Yes,87,66,None,No,,https://linkedin.com/in/jecrc-student-68
+Pranav Sharma,Civil,Yes,46,46,None,Yes,,https://linkedin.com/in/jecrc-student-69
+Radhika Singh,Mechanical,Yes,54,47,Achievements,No,https://github.com/jecrc-demo/student-70,https://linkedin.com/in/jecrc-student-70
+Rahul Khandelwal,CSE,Yes,63,49,Projects; Certifications,No,,https://linkedin.com/in/jecrc-student-71
+Riya Mathur,CSE AI DevOps,Yes,71,50,None,No,,https://linkedin.com/in/jecrc-student-72

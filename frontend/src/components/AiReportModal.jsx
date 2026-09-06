@@ -25,7 +25,7 @@ export default function AiReportModal({ open, onClose, summary }) {
   const [error, setError] = useState('');
   const [report, setReport] = useState('');
 
-  const fallbackReport = useMemo(() => generateLocalReport(summary), [summary]);
+  const fallbackReport = useMemo(() => generateLocalReport(summary || {}), [summary]);
 
   useEffect(() => {
     setModel(getDefaultAiModel(provider));
@@ -34,6 +34,7 @@ export default function AiReportModal({ open, onClose, summary }) {
   if (!open) return null;
 
   const runReport = async () => {
+    if (loading) return;
     setError('');
     setLoading(true);
 
@@ -59,6 +60,7 @@ export default function AiReportModal({ open, onClose, summary }) {
 
   const downloadReport = () => {
     const content = report || fallbackReport;
+    if (!content) return;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -70,7 +72,7 @@ export default function AiReportModal({ open, onClose, summary }) {
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4'>
-      <div className='w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl'>
+      <div className='w-full max-w-3xl rounded-[28px] border border-[var(--pf-border)] bg-[var(--pf-surface-strong)] p-5 shadow-[var(--pf-shadow)] backdrop-blur-xl'>
         <div className='mb-4 flex items-center justify-between'>
           <div>
             <h3 className='text-lg font-semibold text-slate-900'>AI Report Studio</h3>
@@ -123,14 +125,14 @@ export default function AiReportModal({ open, onClose, summary }) {
           {error ? <p className='mt-2 text-xs text-rose-600'>{error}</p> : null}
         </div>
 
-        <div className='mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4'>
-          <pre className='max-h-[360px] overflow-auto whitespace-pre-wrap text-sm text-slate-700'>
+        <div className='mt-4 rounded-2xl border border-[var(--pf-border)] bg-white/65 p-4 dark:bg-white/[0.035]'>
+          <pre className='max-h-[360px] overflow-auto whitespace-pre-wrap text-sm text-[var(--pf-text)]'>
             {report || 'Your report preview will appear here.'}
           </pre>
         </div>
 
         <div className='mt-4 flex justify-end gap-2'>
-          <Button variant='secondary' onClick={downloadReport}>Download</Button>
+          <Button variant='secondary' onClick={downloadReport} disabled={!report && !fallbackReport}>Download</Button>
           <Button onClick={onClose}>Done</Button>
         </div>
       </div>

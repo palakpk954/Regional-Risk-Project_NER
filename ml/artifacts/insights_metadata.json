@@ -1,0 +1,75 @@
+{
+  "model_used": "catboost-tabular-v1",
+  "rows": 287,
+  "target_distribution": {
+    "1": 156,
+    "0": 131
+  },
+  "accuracy": 0.8472,
+  "roc_auc": 0.9456,
+  "features": [
+    "cgpa",
+    "attendance",
+    "active_backlogs",
+    "branch",
+    "ats_score",
+    "aptitude_score",
+    "communication_score",
+    "projects",
+    "internships",
+    "skills_count",
+    "applications_count"
+  ],
+  "cat_features": [
+    "branch"
+  ],
+  "top_features": [
+    {
+      "feature": "attendance",
+      "importance": 21.2247
+    },
+    {
+      "feature": "ats_score",
+      "importance": 17.7676
+    },
+    {
+      "feature": "cgpa",
+      "importance": 15.9657
+    },
+    {
+      "feature": "branch",
+      "importance": 11.2504
+    },
+    {
+      "feature": "aptitude_score",
+      "importance": 9.0338
+    },
+    {
+      "feature": "communication_score",
+      "importance": 6.0502
+    },
+    {
+      "feature": "projects",
+      "importance": 5.9468
+    },
+    {
+      "feature": "internships",
+      "importance": 4.2733
+    }
+  ],
+  "processed_dataset": "data\\processed\\placement_training_data.csv",
+  "artifact": "ml\\artifacts\\catboost_placement_model.cbm",
+  "raw_feature_columns": [
+    "cgpa",
+    "attendance",
+    "active_backlogs",
+    "branch",
+    "ats_score",
+    "aptitude_score",
+    "communication_score",
+    "projects",
+    "internships",
+    "skills_count",
+    "applications_count"
+  ]
+}

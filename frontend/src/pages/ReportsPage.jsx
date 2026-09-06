@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import AiReportModal from '../components/AiReportModal';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import Input from '../components/Input';
 import PageContainer from '../components/PageContainer';
 import SectionHeader from '../components/SectionHeader';
 import { generateReportAiInsights } from '../services/engineService';

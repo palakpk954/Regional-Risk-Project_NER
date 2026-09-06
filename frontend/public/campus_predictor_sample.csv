@@ -1,0 +1,6 @@
+s_id,name,tier,gender,branch,cgpa,inter_gpa,ssc_gpa,internships,no_of_projects,is_participate_hackathon,is_participated_extracurricular,no_of_programming_languages,dsa,mobile_dev,web_dev,Machine Learning,cloud,other_skills,status,company,package
+1,Aarav Sharma,2,Male,CSE,8.7,8.8,9.0,1,3,1,1,3,1,0,1,1,1,"React,Node",Selected,Bytewave,10.0
+2,Diya Patel,1,Female,IT,9.1,9.2,9.1,2,4,1,1,4,1,0,1,1,1,"Python,ML",Selected,Cloudnest,12.5
+3,Rohan Mehta,3,Male,ECE,7.4,7.8,8.0,0,2,0,1,2,0,0,1,0,0,"HTML,CSS",Interview,Nexora,0
+4,Ananya Singh,2,Female,CSE,8.3,8.1,8.4,1,3,1,0,3,1,0,1,0,1,"DSA,Web",Applied,Unassigned,0
+5,Ishaan Gupta,3,Male,MECH,7.0,7.4,7.6,0,1,0,0,2,0,0,0,0,0,"AutoCAD",Rejected,Unassigned,0

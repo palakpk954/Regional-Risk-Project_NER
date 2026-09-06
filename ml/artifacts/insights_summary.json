@@ -1,0 +1,48 @@
+{
+  "cgpa_thresholds": {
+    "high_chance": 7.2,
+    "risk_zone": 6.1
+  },
+  "branch_performance": [
+    {
+      "branch": "CSE",
+      "placement_rate": 58.57
+    },
+    {
+      "branch": "CSE AI DevOps",
+      "placement_rate": 36.36
+    },
+    {
+      "branch": "Civil",
+      "placement_rate": 10.0
+    },
+    {
+      "branch": "ECE",
+      "placement_rate": 10.0
+    },
+    {
+      "branch": "Electrical",
+      "placement_rate": 0.0
+    },
+    {
+      "branch": "IT",
+      "placement_rate": 10.0
+    },
+    {
+      "branch": "MBA",
+      "placement_rate": 70.34
+    },
+    {
+      "branch": "Mechanical",
+      "placement_rate": 10.0
+    },
+    {
+      "branch": "Other",
+      "placement_rate": 45.45
+    }
+  ],
+  "salary_trends": {},
+  "baseline_prediction": {
+    "probability": 96.89
+  }
+}

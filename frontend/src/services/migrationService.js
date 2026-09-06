@@ -296,6 +296,32 @@ export function parseUploadedFile(file) {
   throw new Error('Unsupported file type. Please upload CSV, XLSX, or XLS files.');
 }
 
+export async function parseTabularFile(file) {
+  const extension = String(file?.name || '').split('.').pop()?.toLowerCase();
+  if (extension === 'csv') {
+    return new Promise((resolve, reject) => {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: ({ data, errors }) => {
+          if (errors?.length) reject(new Error(errors[0].message));
+          else resolve(data || []);
+        },
+        error: reject,
+      });
+    });
+  }
+
+  if (extension === 'xlsx' || extension === 'xls') {
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    return XLSX.utils.sheet_to_json(sheet, { defval: '' });
+  }
+
+  throw new Error('Upload a CSV, XLSX, or XLS file.');
+}
+
 export async function importRowsFromGoogleSheetUrl(url) {
   const { spreadsheetId, gid } = extractSheetMeta(url);
   if (!spreadsheetId) {

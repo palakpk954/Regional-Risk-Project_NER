@@ -1,18 +1,8 @@
-# node modules
-node_modules/
-
-# env files
+node_modules
+dist
 .env
-
-# build files
-dist/
-build/
-
-# logs
-npm-debug.log*
-
-# OS files
 .DS_Store
-Thumbs.db
-
-backend/services/credentials.json
+*.log
+__pycache__/
+*.pyc
+.venv/
