@@ -36,13 +36,25 @@ function databaseReady() {
 router.get('/overview', async (req, res, next) => {
   try {
     const district = req.query.district;
+    const includeAcknowledged = req.query.includeAcknowledged === 'true';
     const zones = databaseReady()
       ? await RiskZone.find(district ? { district } : {}).lean()
       : persistentStore.zones.filter((zone) => !district || zone.district === district);
     const alerts = databaseReady()
-      ? await Alert.find({ acknowledgedAt: null }).sort({ createdAt: -1 }).lean()
-      : persistentStore.alerts.filter((alert) => !alert.acknowledgedAt);
-    return res.json({ ok: true, source: databaseReady() ? 'mongodb' : 'memory', zones, alerts, generatedAt: new Date().toISOString() });
+      ? await Alert.find(includeAcknowledged ? {} : { acknowledgedAt: null }).sort({ createdAt: -1 }).lean()
+      : persistentStore.alerts.filter((alert) => includeAcknowledged || !alert.acknowledgedAt);
+    return res.json({ ok: true, source: databaseReady() ? 'mongodb' : 'memory', zones, alerts, allAlerts: persistentStore.alerts, generatedAt: new Date().toISOString() });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get('/field-reports', async (req, res, next) => {
+  try {
+    const reports = databaseReady()
+      ? await FieldReport.find().sort({ createdAt: -1 }).lean()
+      : (persistentStore.reports || []);
+    return res.json({ ok: true, reports });
   } catch (error) {
     return next(error);
   }
@@ -50,17 +62,36 @@ router.get('/overview', async (req, res, next) => {
 
 router.post('/field-reports', async (req, res, next) => {
   try {
-    const { hazardType, severity, description, latitude, longitude, mediaUrl } = req.body || {};
+    const { hazardType, severity, description, latitude, longitude, mediaUrl, district, locationName } = req.body || {};
     if (!hazardType || !severity || !description) {
       return res.status(400).json({ ok: false, message: 'hazardType, severity, and description are required.' });
     }
-    const reportData = { hazardType, severity, description, latitude, longitude, mediaUrl };
-    const report = databaseReady() ? await FieldReport.create(reportData) : { ...reportData, id: `report-${Date.now()}`, status: 'Queued', createdAt: new Date().toISOString() };
+    const reportData = { hazardType, severity, description, latitude, longitude, mediaUrl, district: district || 'Sikkim', locationName: locationName || 'Monitored Sector', status: 'Queued', createdAt: new Date().toISOString() };
+    const report = databaseReady() ? await FieldReport.create(reportData) : { ...reportData, id: `report-${Date.now()}` };
     if (!databaseReady()) {
-      persistentStore.reports.push(report);
+      persistentStore.reports = persistentStore.reports || [];
+      persistentStore.reports.unshift(report);
       saveStore(persistentStore);
     }
     return res.status(201).json({ ok: true, report });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.patch('/field-reports/:id/status', async (req, res, next) => {
+  try {
+    const { status } = req.body || {};
+    if (!status) return res.status(400).json({ ok: false, message: 'status is required.' });
+    const report = databaseReady()
+      ? await FieldReport.findByIdAndUpdate(req.params.id, { status }, { new: true }).lean()
+      : (persistentStore.reports || []).find((item) => item.id === req.params.id);
+    if (!report) return res.status(404).json({ ok: false, message: 'Report not found.' });
+    if (!databaseReady()) {
+      report.status = status;
+      saveStore(persistentStore);
+    }
+    return res.json({ ok: true, report });
   } catch (error) {
     return next(error);
   }
@@ -80,6 +111,12 @@ router.patch('/alerts/:id/acknowledge', async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+});
+
+router.post('/alerts/reset', (req, res) => {
+  persistentStore.alerts = seedAlerts.map((item) => ({ ...item, acknowledgedAt: null }));
+  saveStore(persistentStore);
+  return res.json({ ok: true, alerts: persistentStore.alerts });
 });
 
 router.post('/chat', (req, res) => {
@@ -143,9 +180,31 @@ router.get('/predictions', (req, res) => {
     if (history?.eventsLast5Years >= 4) score += 3;
     if ((rainfall?.rainfallMm6h || 0) >= 80) score += 5;
     score = Math.min(99, score);
-    return { ...zone, predictedScore: score, confidence: persistentStore.dataSnapshots.ingestedAt ? 0.68 : 0.35, drivers: { rainfall, sensor, satellite, terrain, history } };
+    return { ...zone, predictedScore: score, confidence: persistentStore.dataSnapshots.ingestedAt ? 0.73 : 0.68, drivers: { rainfall, sensor, satellite, terrain, history } };
   });
   return res.json({ ok: true, source: persistentStore.dataSnapshots.ingestedAt ? 'ingested-adapters' : 'seed-data', generatedAt: new Date().toISOString(), predictions: zones });
+});
+
+router.get('/nasa/research', (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const nasaData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'nasa_glc_meghalaya.json'), 'utf8'));
+    return res.json({ ok: true, data: nasaData });
+  } catch (error) {
+    return res.status(500).json({ ok: false, message: error.message });
+  }
+});
+
+router.get('/nasa/glc-events', (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const nasaData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'nasa_glc_meghalaya.json'), 'utf8'));
+    return res.json({ ok: true, events: nasaData.glcEvents || [] });
+  } catch (error) {
+    return res.status(500).json({ ok: false, message: error.message });
+  }
 });
 
 module.exports = router;

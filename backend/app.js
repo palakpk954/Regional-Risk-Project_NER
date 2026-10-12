@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const monitoringRoutes = require('./routes/monitoring');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
+app.use('/api/auth', authRoutes);
 app.use('/api/monitoring', monitoringRoutes);
 
 module.exports = app;

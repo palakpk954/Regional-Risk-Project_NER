@@ -72,24 +72,64 @@
       "type": "Critical",
       "title": "NH-10 blocked near 32nd Mile",
       "detail": "Debris reported by field unit · 18 min ago",
-      "action": "Deploy response team"
+      "action": "Deploy response team",
+      "acknowledgedAt": null
     },
     {
       "id": "alert-2",
       "type": "High",
       "title": "Rainfall threshold crossed in Jowai",
       "detail": "86 mm in the last 6 hours · 42 min ago",
-      "action": "Review evacuation plan"
+      "action": "Review evacuation plan",
+      "acknowledgedAt": null
     },
     {
       "id": "alert-3",
       "type": "Watch",
       "title": "Slope movement detected at Haflong",
       "detail": "Satellite pass + sensor correlation · 1 hr ago",
-      "action": "Request field verification"
+      "action": "Request field verification",
+      "acknowledgedAt": null
     }
   ],
-  "reports": [],
+  "reports": [
+    {
+      "id": "report-101",
+      "hazardType": "Crack / slope movement",
+      "severity": "Critical",
+      "locationName": "NH-10 Milestone 32",
+      "district": "Sikkim",
+      "description": "Longitudinal fissure widening across uphill embankment. Soil slippage observed near culvert #4.",
+      "latitude": 27.182,
+      "longitude": 88.541,
+      "status": "Verified",
+      "createdAt": "2026-10-12T18:15:00.000Z"
+    },
+    {
+      "id": "report-102",
+      "hazardType": "Road blockage",
+      "severity": "High",
+      "locationName": "Jowai Bypass KM 14",
+      "district": "Meghalaya",
+      "description": "Mud and small boulders obstructing outer lane. Local traffic diverted through single inner lane.",
+      "latitude": 25.441,
+      "longitude": 92.189,
+      "status": "Verified",
+      "createdAt": "2026-10-12T17:40:00.000Z"
+    },
+    {
+      "id": "report-103",
+      "hazardType": "Rockfall",
+      "severity": "Moderate",
+      "locationName": "Chungthang Valley Ridge",
+      "district": "Sikkim",
+      "description": "Loose scree and minor rockfall after morning rainfall. Road clearance crew on standby.",
+      "latitude": 27.592,
+      "longitude": 88.648,
+      "status": "Resolved",
+      "createdAt": "2026-10-12T16:20:00.000Z"
+    }
+  ],
   "dataSnapshots": {
     "weather": {
       "source": "demo-weather",
@@ -167,7 +207,7 @@
         }
       ]
     },
-    "ingestedAt": "2026-09-06T12:23:45.329Z"
+    "ingestedAt": "2026-10-12T19:51:09.925Z"
   },
   "predictionRuns": []
 }
