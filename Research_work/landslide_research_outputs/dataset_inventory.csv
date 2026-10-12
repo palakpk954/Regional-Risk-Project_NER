@@ -1,0 +1,11 @@
+Filename,Format,Size_Bytes,Info,Potential_Research_Use
+analyze_rainfall_thresholds.py,.py,8220,,Landslide susceptibility / Rainfall modeling
+generate_deliverables.py,.py,4795,,Script
+glc_cleaning_pipeline.py,.py,13721,,Script
+GLC_EastKhasiHills_clean.csv,.csv,6714,"Cols: 38, Rows: 8",Landslide susceptibility / Rainfall modeling
+GLC_India_clean.csv,.csv,1200629,"Cols: 33, Rows: 1497",Landslide susceptibility / Rainfall modeling
+GLC_Landslide_Cleaned_India_Meghalaya.xlsx,.xlsx,716119,,Landslide susceptibility / Rainfall modeling
+GLC_Meghalaya_clean.csv,.csv,26861,"Cols: 38, Rows: 36",Landslide susceptibility / Rainfall modeling
+Global_Landslide_Catalog_Export_rows.csv,.csv,8172383,,Script
+gpm_rainfall_extract.py,.py,4811,,Landslide susceptibility / Rainfall modeling
+Meghalaya_rainfall_extraction_windows.csv,.csv,9422,,Landslide susceptibility / Rainfall modeling

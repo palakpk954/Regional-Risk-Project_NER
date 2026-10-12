@@ -1,0 +1,8 @@
+duration_days,threshold_mm (P10 of events),events_above_%,nonevent_days_above_% (false alarm rate)
+1,0.2,90.3,90.8
+3,8.7,90.3,76.7
+5,26.3,90.3,62.6
+7,37.2,90.3,67.4
+10,46.0,90.3,80.4
+15,71.6,90.3,85.0
+30,166.9,90.3,85.0

@@ -1,0 +1,13 @@
+Random Forest Classification Report
+===================================
+
+              precision    recall  f1-score   support
+
+           0       0.85      0.85      0.85        20
+           1       0.25      0.25      0.25         4
+
+    accuracy                           0.75        24
+   macro avg       0.55      0.55      0.55        24
+weighted avg       0.75      0.75      0.75        24
+
+ROC-AUC Score: 0.7313

@@ -6,3 +6,15 @@ dist
 __pycache__/
 *.pyc
 .venv/
+
+# Large GIS rasters exceeding GitHub 100MB limit
+*.tif
+*.tiff
+*.msi
+
+# Temporary raw satellite grids (>1.8 GB) & internal agent caches
+Research_work/tmp_gpm_*/
+Research_work/.agent/
+Research_work/.agents/
+Research_work/.gemini/
+Research_work/.gsd/

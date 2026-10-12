@@ -1,0 +1,16 @@
+{
+    "Total_GLC_Records": 11033,
+    "Meghalaya_Events": 36,
+    "East_Khasi_Hills_Events": 8,
+    "Random_Forest_Ready": false,
+    "LSTM_Ready": false,
+    "Missing_Data_For_RF": [
+        "DEM",
+        "LULC",
+        "Soil",
+        "Vegetation Index"
+    ],
+    "Missing_Data_For_LSTM": [
+        "GPM IMERG Rainfall Series (Needs download)"
+    ]
+}

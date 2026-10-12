@@ -1,0 +1,4 @@
+model,ROC_AUC,PR_AUC,recall@op,precision@op,F1@op,false_alarm_rate@op
+Logistic regression,0.676,0.172,0.806,0.038,0.073,0.733
+Random forest,0.667,0.152,0.806,0.042,0.079,0.669
+Single feature (r5),0.733,0.259,0.806,0.057,0.107,0.478
