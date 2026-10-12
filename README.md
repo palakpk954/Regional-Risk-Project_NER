@@ -34,28 +34,31 @@ India's **North Eastern Region (NER)**—especially **Meghalaya** and the **East
 
 ```mermaid
 flowchart TD
-    subgraph Data Sources
-        NASA_GLC[NASA Global Landslide Catalog<br/>35 Cleaned Meghalaya Events]
-        GPM[NASA GPM IMERG V07<br/>60-Day Antecedent Rainfall]
-        DEM[Copernicus DEM 30m<br/>Slope, Elevation, Aspect]
-        ESA[ESA WorldCover 10m<br/>Forest & Land Use]
+    subgraph DS["Data Sources"]
+        NASA_GLC["NASA Global Landslide Catalog<br/>35 Cleaned Meghalaya Events"]
+        GPM["NASA GPM IMERG V07<br/>60-Day Antecedent Rainfall"]
+        DEM["Copernicus DEM 30m<br/>Slope, Elevation, Aspect"]
+        ESA["ESA WorldCover 10m<br/>Forest & Land Use"]
     end
 
-    subgraph AI Engine & Backhaul
-        RF[Random Forest AI Classifier<br/>ROC-AUC = 0.7313]
-        LORA[LoRaWAN Edge Protocol<br/>Offline Store-and-Forward]
-        EXPRESS[Node.js Express Backend API<br/>Port 5000 /api]
+    subgraph AI["AI Engine & Backhaul"]
+        RF["Random Forest AI Classifier<br/>ROC-AUC = 0.7313"]
+        LORA["LoRaWAN Edge Protocol<br/>Offline Store-and-Forward"]
+        EXPRESS["Node.js Express Backend API<br/>Port 5000 /api"]
     end
 
-    subgraph Front-End Application
-        AUTH[Auth Portal: Welcome to our<br/>Regional Risk Calculator]
-        MAP[Interactive Leaflet Risk Map<br/>NASA Pins & Real-time Corridors]
-        METRICS[Model Telemetry & GPM Curves]
-        TARA[Tara NER AI Advisory Assistant]
-        ALERTS[Multilingual SMS & CAP Broadcast<br/>Khasi, Garo, Assamese, English]
+    subgraph FE["Front-End Application"]
+        AUTH["Auth Portal: Welcome to our<br/>Regional Risk Calculator"]
+        MAP["Interactive Leaflet Risk Map<br/>NASA Pins & Real-time Corridors"]
+        METRICS["Model Telemetry & GPM Curves"]
+        TARA["Tara NER AI Advisory Assistant"]
+        ALERTS["Multilingual SMS & CAP Broadcast<br/>Khasi, Garo, Assamese, English"]
     end
 
-    Data Sources --> RF
+    NASA_GLC --> RF
+    GPM --> RF
+    DEM --> RF
+    ESA --> RF
     RF --> EXPRESS
     LORA --> EXPRESS
     EXPRESS --> AUTH
@@ -121,6 +124,11 @@ regional-risk-project/
 │       ├── 02_download_copernicus_dem.py # Copernicus DEM 30m STAC fetcher
 │       ├── 03_rainfall_analysis_gpm_imerg.py # Antecedent GPM rainfall analysis
 │       └── 04_dataset_inventory.py     # Local geospatial dataset inventory
+├── Research_work/                      # Full academic thesis workspace
+│   ├── Thesis_Final_v2.docx            # Final thesis manuscript (.docx & .md)
+│   ├── GLC_Landslide_Cleaned_India_Meghalaya.xlsx # Master validated dataset
+│   ├── landslide_research_outputs/     # Model deliverables, reports & ROC curves
+│   └── *.py                            # Raw data-cleaning and ML scripts
 └── README.md
 ```
 
