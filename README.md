@@ -156,7 +156,7 @@ cd frontend
 npm install
 npm run dev
 ```
-*Frontend runs on `http://localhost:5173`.*
+*Frontend runs on `http://localhost:5173`.* regional-risk-project-k6et140lw-regional-risk-project.vercel.app
 
 ---
 
