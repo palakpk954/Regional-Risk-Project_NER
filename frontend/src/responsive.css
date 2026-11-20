@@ -1,0 +1,365 @@
+/* Responsive refinements for the dashboard and sign-in experience. */
+
+:root,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+.forest-app {
+  min-width: 320px;
+  overflow-x: clip;
+}
+
+.forest-app main,
+.forest-app main > div,
+.forest-app section,
+.forest-app article,
+.forest-app header > div,
+.forest-app .grid > *,
+.forest-app .flex > * {
+  min-width: 0;
+}
+
+.forest-app table {
+  min-width: 560px;
+}
+
+.forest-app .leaflet-container {
+  width: 100%;
+}
+
+/* Tablet and smaller laptop layouts. */
+@media (max-width: 1023px) {
+  .forest-app aside.fixed {
+    width: min(18rem, 86vw);
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .forest-app aside.fixed > nav {
+    padding-bottom: 190px;
+  }
+
+  .forest-app main > header {
+    gap: 12px;
+    padding: 12px 20px;
+  }
+
+  .forest-app main > header > div:last-child {
+    gap: 10px;
+  }
+
+  .forest-app main > div.mx-auto {
+    padding: 24px;
+  }
+}
+
+/* Phones and compact tablets. */
+@media (max-width: 640px) {
+  .forest-app main > header {
+    position: sticky;
+    height: auto;
+    min-height: 68px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px 12px;
+  }
+
+  .forest-app main > header > div:first-child {
+    flex: 1 1 100%;
+    gap: 8px;
+  }
+
+  .forest-app main > header > div:first-child > div {
+    min-width: 0;
+  }
+
+  .forest-app main > header > div:first-child p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px;
+  }
+
+  .forest-app main > header > div:first-child h1 {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .forest-app main > header > div:last-child {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .forest-app main > header select {
+    max-width: min(42vw, 170px);
+    min-width: 0;
+    padding: 8px 26px 8px 10px;
+    font-size: 11px;
+  }
+
+  .forest-app main > header button[aria-label='Open notifications'] {
+    padding: 9px;
+  }
+
+  .forest-app main > header > div:last-child > div:last-child {
+    gap: 6px;
+    padding-left: 8px;
+  }
+
+  .forest-app main > header > div:last-child > div:last-child > div {
+    width: 32px;
+    height: 32px;
+  }
+
+  .forest-app main > div.mx-auto {
+    padding: 18px 12px 100px;
+  }
+
+  .forest-app h2.text-4xl {
+    font-size: clamp(2.15rem, 10vw, 3rem);
+  }
+
+  .forest-app section > .flex.items-center.justify-between,
+  .forest-app .rounded-2xl > .flex.items-center.justify-between,
+  .forest-app .rounded-2xl > .flex.items-start.justify-between {
+    gap: 10px;
+  }
+
+  .forest-app section > .flex.items-center.justify-between > div,
+  .forest-app .rounded-2xl > .flex.items-center.justify-between > div {
+    min-width: 0;
+  }
+
+  .forest-app .grid {
+    min-width: 0;
+  }
+
+  .forest-app .grid.grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .forest-app .tara-hint-compact {
+    max-width: 100%;
+  }
+
+  .forest-app .leaflet-custom-controls {
+    right: 8px;
+    top: 58px;
+  }
+
+  .forest-app .leaflet-custom-controls button {
+    height: 32px;
+    width: 32px;
+  }
+
+  .forest-app .leaflet-container + *,
+  .forest-app .leaflet-container {
+    touch-action: pan-x pan-y;
+  }
+
+  .forest-app .relative.h-\[430px\] {
+    height: 340px;
+  }
+
+  .forest-app .relative.h-\[620px\] {
+    height: min(62vh, 480px);
+    min-height: 320px;
+  }
+
+  .forest-app .absolute.left-4.top-4 {
+    left: 8px;
+    top: 8px;
+    max-width: calc(100% - 58px);
+    padding: 7px 8px;
+    font-size: 10px;
+  }
+
+  .forest-app .absolute.bottom-4.left-4 {
+    left: 8px;
+    bottom: 8px;
+    max-width: calc(100% - 16px);
+    gap: 6px;
+    padding: 6px;
+    font-size: 9px;
+  }
+
+  .forest-app .absolute.bottom-4.left-4 > span {
+    gap: 4px;
+  }
+
+  .forest-app .absolute.bottom-4.left-4 > span:last-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .forest-app [class*='overflow-x-auto'] {
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .forest-app .fixed.inset-0.z-50 {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 12px;
+  }
+
+  .forest-app .fixed.inset-0.z-50 > div {
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    padding: 18px;
+  }
+
+  .forest-app .assistant-launcher {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .forest-app .assistant-character {
+    height: 62px;
+    width: 62px;
+  }
+
+  .forest-app .assistant-face {
+    left: 10px;
+    top: 15px;
+    transform: scale(.85);
+    transform-origin: top left;
+  }
+
+  .forest-app .assistant-scarf {
+    width: 62px;
+  }
+
+  .forest-app .assistant-label {
+    padding: 6px 9px;
+  }
+
+  .forest-app .assistant-bubble {
+    right: 0;
+    bottom: 94px;
+    width: min(180px, calc(100vw - 32px));
+  }
+
+  .forest-app .fixed.bottom-24.right-4 {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: auto;
+    height: min(72dvh, 620px);
+    max-height: calc(100dvh - 24px);
+    border-radius: 22px;
+  }
+
+  .forest-app .fixed.bottom-24.right-4 > div:first-child {
+    padding: 12px 14px;
+  }
+
+  .forest-app .fixed.bottom-24.right-4 > div:first-child p:first-child {
+    font-size: 12px;
+  }
+
+  /* Keep long labels, names, and telemetry readable without forcing page width. */
+  .forest-app h2,
+  .forest-app h3,
+  .forest-app h4,
+  .forest-app p,
+  .forest-app span,
+  .forest-app button {
+    overflow-wrap: anywhere;
+  }
+
+  .forest-app input,
+  .forest-app select,
+  .forest-app textarea {
+    max-width: 100%;
+  }
+
+  /* Sign-in screen: preserve the two-column desktop design, stack it on small screens. */
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] > header {
+    padding: 14px 16px;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] > main {
+    padding: 24px 14px;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] > main > div {
+    gap: 22px;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] > main > div > div:first-child {
+    gap: 18px;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] h2 {
+    font-size: clamp(1.8rem, 9vw, 2.5rem);
+    overflow-wrap: anywhere;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] h2 br {
+    display: none;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] main > div > div:first-child > div:first-child {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] main > div > div:last-child {
+    padding: 18px;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] footer {
+    padding: 14px 16px;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 380px) {
+  .forest-app main > header > div:last-child {
+    gap: 5px;
+  }
+
+  .forest-app main > header select {
+    max-width: 38vw;
+    padding-left: 7px;
+    font-size: 10px;
+  }
+
+  .forest-app main > header > div:last-child > div:last-child {
+    gap: 4px;
+    padding-left: 5px;
+  }
+
+  .forest-app main > header > div:last-child > div:last-child > button {
+    padding: 7px;
+  }
+
+  .forest-app .grid.grid-cols-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .forest-app .absolute.bottom-4.left-4 {
+    font-size: 8px;
+  }
+
+  body > #root > div.min-h-screen.bg-\[\#0d2318\] main > div > div:last-child {
+    padding: 14px;
+  }
+}
